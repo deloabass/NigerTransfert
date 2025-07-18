@@ -440,6 +440,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E5E5E5',
+    borderRadius: 12,
   },
   currencySymbol: {
     fontSize: 32,
