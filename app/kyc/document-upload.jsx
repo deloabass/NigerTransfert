@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowLeft, Upload, Camera, FileText, CircleCheck as CheckCircle, AlertTriangle } from 'lucide-react-native';
+import { ArrowLeft, Upload, Camera, FileText, CircleCheck as CheckCircle, TriangleAlert as AlertTriangle } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 export default function DocumentUploadScreen() {
