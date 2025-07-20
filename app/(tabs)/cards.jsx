@@ -331,7 +331,7 @@ export default function CardsScreen() {
                   style={styles.formInput}
                   value={formData.cardholderName}
                   onChangeText={(text) => setFormData({ ...formData, cardholderName: text })}
-                  placeholder="AMADOU DIALLO"
+                  placeholder="Abdoul-Razack AMADOU"
                   placeholderTextColor="#999"
                   autoCapitalize="characters"
                 />

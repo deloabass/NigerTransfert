@@ -205,7 +205,7 @@ export default function BeneficiariesScreen() {
                   style={styles.formInput}
                   value={formData.name}
                   onChangeText={(text) => setFormData({ ...formData, name: text })}
-                  placeholder="Ex: Mamadou Tandia"
+                  placeholder="Ex: Abassa Soumana"
                   placeholderTextColor="#999"
                 />
               </View>
