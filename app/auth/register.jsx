@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowLeft } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function RegisterScreen() {
   const [formData, setFormData] = useState({
@@ -13,15 +14,31 @@ export default function RegisterScreen() {
     phone: '',
     password: '',
     confirmPassword: '',
+    country: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { register } = useAuth();
 
   const handleRegister = async () => {
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword) {
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword || !formData.country) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs');
+      return;
+    }
+
+    // Validation email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      Alert.alert('Erreur', 'Veuillez saisir une adresse email valide');
+      return;
+    }
+
+    // Validation téléphone
+    const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+    if (!phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
+      Alert.alert('Erreur', 'Veuillez saisir un numéro de téléphone valide');
       return;
     }
 
@@ -30,20 +47,35 @@ export default function RegisterScreen() {
       return;
     }
 
-    if (formData.password.length < 6) {
-      Alert.alert('Erreur', 'Le mot de passe doit contenir au moins 6 caractères');
+    if (formData.password.length < 8) {
+      Alert.alert('Erreur', 'Le mot de passe doit contenir au moins 8 caractères');
+      return;
+    }
+
+    // Validation force du mot de passe
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
+    if (!passwordRegex.test(formData.password)) {
+      Alert.alert('Erreur', 'Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial');
       return;
     }
 
     setIsLoading(true);
     
-    // Simuler une inscription
-    setTimeout(() => {
+    try {
+      const result = await register(formData);
+      
+      if (result.success) {
+        Alert.alert('Succès', 'Compte créé avec succès !', [
+          { text: 'OK', onPress: () => router.replace('/auth/verify-email') }
+        ]);
+      } else {
+        Alert.alert('Erreur', result.error || 'Une erreur est survenue lors de l\'inscription');
+      }
+    } catch (error) {
+      Alert.alert('Erreur', 'Une erreur est survenue lors de l\'inscription');
+    } finally {
       setIsLoading(false);
-      Alert.alert('Succès', 'Compte créé avec succès !', [
-        { text: 'OK', onPress: () => router.replace('/auth/login') }
-      ]);
-    }, 1500);
+    }
   };
 
   const updateFormData = (key, value) => {
@@ -114,10 +146,21 @@ export default function RegisterScreen() {
           </View>
 
           <View style={styles.inputContainer}>
+            <Phone size={20} color="#666" />
+            <TextInput
+              style={styles.input}
+              placeholder="Pays de résidence"
+              value={formData.country}
+              onChangeText={(text) => updateFormData('country', text)}
+              placeholderTextColor="#666"
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
             <Lock size={20} color="#666" />
             <TextInput
               style={styles.input}
-              placeholder="Mot de passe"
+              placeholder="Mot de passe (8+ caractères)"
               value={formData.password}
               onChangeText={(text) => updateFormData('password', text)}
               secureTextEntry={!showPassword}
@@ -130,6 +173,14 @@ export default function RegisterScreen() {
                 <Eye size={20} color="#666" />
               )}
             </TouchableOpacity>
+          </View>
+
+          <View style={styles.passwordRequirements}>
+            <Text style={styles.requirementText}>Le mot de passe doit contenir :</Text>
+            <Text style={styles.requirementItem}>• Au moins 8 caractères</Text>
+            <Text style={styles.requirementItem}>• Une majuscule et une minuscule</Text>
+            <Text style={styles.requirementItem}>• Un chiffre</Text>
+            <Text style={styles.requirementItem}>• Un caractère spécial (@$!%*?&)</Text>
           </View>
 
           <View style={styles.inputContainer}>
@@ -275,6 +326,23 @@ const styles = StyleSheet.create({
   termsLink: {
     color: '#FF6B35',
     fontWeight: '500',
+  },
+  passwordRequirements: {
+    backgroundColor: '#F8F9FA',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  requirementText: {
+    fontSize: 12,
+    color: '#333',
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  requirementItem: {
+    fontSize: 11,
+    color: '#666',
+    marginBottom: 2,
   },
   footer: {
     flexDirection: 'row',

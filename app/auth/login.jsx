@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -18,15 +20,30 @@ export default function LoginScreen() {
       return;
     }
 
+    // Validation email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert('Erreur', 'Veuillez saisir une adresse email valide');
+      return;
+    }
+
     setIsLoading(true);
     
-    // Simuler une authentification
-    setTimeout(() => {
+    try {
+      const result = await login(email, password);
+      
+      if (result.success) {
+        Alert.alert('Succès', 'Connexion réussie !', [
+          { text: 'OK', onPress: () => router.replace('/(tabs)') }
+        ]);
+      } else {
+        Alert.alert('Erreur', 'Email ou mot de passe incorrect');
+      }
+    } catch (error) {
+      Alert.alert('Erreur', 'Une erreur est survenue lors de la connexion');
+    } finally {
       setIsLoading(false);
-      Alert.alert('Succès', 'Connexion réussie !', [
-        { text: 'OK', onPress: () => router.replace('/(tabs)') }
-      ]);
-    }, 1500);
+    }
   };
 
   return (
@@ -95,7 +112,12 @@ export default function LoginScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.forgotPassword}>
-          <Text style={styles.forgotPasswordText}>Mot de passe oublié ?</Text>
+          <Text 
+            style={styles.forgotPasswordText}
+            onPress={() => router.push('/auth/forgot-password')}
+          >
+            Mot de passe oublié ?
+          </Text>
         </TouchableOpacity>
       </View>
 
