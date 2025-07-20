@@ -5,7 +5,9 @@ import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
 import Transactions from './pages/Transactions';
 import Beneficiaries from './pages/Beneficiaries';
+import KYC from './pages/KYC';
 import Analytics from './pages/Analytics';
+import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import { AuthProvider } from './contexts/AuthContext';
@@ -21,7 +23,9 @@ function App() {
             <Route path="users" element={<Users />} />
             <Route path="transactions" element={<Transactions />} />
             <Route path="beneficiaries" element={<Beneficiaries />} />
+            <Route path="kyc" element={<KYC />} />
             <Route path="analytics" element={<Analytics />} />
+            <Route path="reports" element={<Reports />} />
             <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>

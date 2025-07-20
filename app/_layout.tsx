@@ -9,6 +9,11 @@ export default function RootLayout() {
   return (
     <>
       <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="onboarding" />
+        <Stack.Screen name="auth" />
+        <Stack.Screen name="kyc" />
+        <Stack.Screen name="faq" />
+        <Stack.Screen name="profile" />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="dark" />

@@ -8,6 +8,8 @@ import {
   BarChart3,
   Settings,
   LogOut,
+  FileText,
+  Shield,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -19,7 +21,9 @@ const Sidebar = () => {
     { name: 'Utilisateurs', href: '/users', icon: Users },
     { name: 'Transactions', href: '/transactions', icon: CreditCard },
     { name: 'Bénéficiaires', href: '/beneficiaries', icon: UserCheck },
+    { name: 'Vérifications KYC', href: '/kyc', icon: Shield },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+    { name: 'Rapports', href: '/reports', icon: FileText },
     { name: 'Paramètres', href: '/settings', icon: Settings },
   ];
 
