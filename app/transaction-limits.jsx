@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowLeft, TrendingUp, Shield, Clock, DollarSign, CheckCircle, AlertTriangle } from 'lucide-react-native';
+import { ArrowLeft, TrendingUp, Shield, Clock, DollarSign, CircleCheck as CheckCircle, TriangleAlert as AlertTriangle } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { formatCurrency } from '@/utils/formatters';
 
