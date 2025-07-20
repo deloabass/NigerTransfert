@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowLeft, ArrowRight, Play, Chrome as Home, Send, History, Users, User, CreditCard, Shield, MapPin, FileText, Bell, CircleHelp as HelpCircle } from 'lucide-react-native';
+import { ArrowLeft, ArrowRight, Play, Chrome as Home, Send, History, Users, User, CreditCard, Shield, MapPin, FileText, Bell, CircleHelp as HelpCircle, TrendingUp } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 const { width } = Dimensions.get('window');
