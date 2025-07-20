@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowLeft, Shield, FileText, Camera, CheckCircle, ArrowRight } from 'lucide-react-native';
+import { ArrowLeft, Shield, FileText, Camera, CircleCheck as CheckCircle, ArrowRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 export default function KycScreen() {
