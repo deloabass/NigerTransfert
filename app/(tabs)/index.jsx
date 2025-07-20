@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Send, Eye, EyeOff, TrendingUp, Clock, CircleCheck as CheckCircle } from 'lucide-react-native';
+import { Send, Eye, EyeOff, TrendingUp, Clock, CircleCheck as CheckCircle, MapPin } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { formatCurrency } from '@/utils/formatters';
 import { mockTransactions } from '@/services/mockData';
@@ -80,7 +80,7 @@ export default function HomeScreen() {
         <View style={styles.quickActions}>
           <TouchableOpacity
             style={styles.quickActionButton}
-            onPress={() => router.push('/send')}
+            onPress={() => router.push('/(tabs)/send')}
           >
             <LinearGradient
               colors={['#2E8B57', '#4CAF50']}
@@ -90,6 +90,21 @@ export default function HomeScreen() {
             >
               <Send size={24} color="#FFFFFF" />
               <Text style={styles.quickActionText}>Envoyer de l'argent</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={styles.quickActionButton}
+            onPress={() => router.push('/country-selection')}
+          >
+            <LinearGradient
+              colors={['#FF6B35', '#FF8A65']}
+              style={styles.quickActionGradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <MapPin size={24} color="#FFFFFF" />
+              <Text style={styles.quickActionText}>Choisir un pays</Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -210,10 +225,12 @@ const styles = StyleSheet.create({
   quickActions: {
     paddingHorizontal: 20,
     marginBottom: 20,
+    gap: 12,
   },
   quickActionButton: {
     borderRadius: 12,
     overflow: 'hidden',
+    marginBottom: 12,
   },
   quickActionGradient: {
     flexDirection: 'row',

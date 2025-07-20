@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { User, Settings, Shield, Bell, CircleHelp as HelpCircle, FileText, LogOut, ChevronRight, CircleCheck as CheckCircle, Circle as XCircle, Camera, CreditCard, Smartphone, Lock } from 'lucide-react-native';
+import { User, Settings, Shield, Bell, CircleHelp as HelpCircle, FileText, LogOut, ChevronRight, CircleCheck as CheckCircle, Circle as XCircle, Camera, CreditCard, Smartphone, Lock, BookOpen } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 export default function ProfileScreen() {
@@ -46,10 +46,28 @@ export default function ProfileScreen() {
       action: () => router.push('/profile/security'),
     },
     {
+      icon: <Shield size={20} color="#666" />,
+      title: 'Centre de sécurité',
+      subtitle: 'Score de sécurité et surveillance',
+      action: () => router.push('/security-center'),
+    },
+    {
       icon: <CreditCard size={20} color="#666" />,
       title: 'Moyens de paiement',
       subtitle: 'Gérez vos cartes et comptes',
       action: () => router.push('/(tabs)/cards'),
+    },
+    {
+      icon: <FileText size={20} color="#666" />,
+      title: 'Limites de transfert',
+      subtitle: 'Consultez vos limites actuelles',
+      action: () => router.push('/transaction-limits'),
+    },
+    {
+      icon: <FileText size={20} color="#666" />,
+      title: 'Vérification KYC',
+      subtitle: 'Vérifiez votre identité',
+      action: () => router.push('/kyc'),
     },
     {
       icon: <Bell size={20} color="#666" />,
@@ -68,6 +86,12 @@ export default function ProfileScreen() {
       title: 'Conditions d\'utilisation',
       subtitle: 'Consultez nos termes',
       action: () => router.push('/profile/terms'),
+    },
+    {
+      icon: <BookOpen size={20} color="#666" />,
+      title: 'Guide de l\'application',
+      subtitle: 'Découvrez toutes les fonctionnalités',
+      action: () => router.push('/app-guide'),
     },
   ];
 
