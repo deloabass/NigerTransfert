@@ -64,9 +64,9 @@ export default function HomeScreen() {
             <Text style={styles.balanceLabel}>Solde disponible</Text>
             <TouchableOpacity onPress={() => setShowBalance(!showBalance)}>
               {showBalance ? (
-                <EyeOff size={20} color="#FFFFFF" />
-              ) : (
                 <Eye size={20} color="#FFFFFF" />
+              ) : (
+                <EyeOff size={20} color="#FFFFFF" />
               )}
             </TouchableOpacity>
           </View>

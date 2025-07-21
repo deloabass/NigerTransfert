@@ -17,6 +17,7 @@ export default function CustomAlert({
 }) {
   const [fadeAnim] = useState(new Animated.Value(0));
   const [scaleAnim] = useState(new Animated.Value(0.8));
+  const [progressAnim] = useState(new Animated.Value(0));
 
   useEffect(() => {
     if (visible) {
@@ -35,9 +36,17 @@ export default function CustomAlert({
       ]).start();
 
       if (autoClose) {
+        progressAnim.setValue(0);
+        Animated.timing(progressAnim, {
+          toValue: 1,
+          duration: autoCloseDelay,
+          useNativeDriver: false, // ⚠️ width can't use native driver
+        }).start();
+
         const timer = setTimeout(() => {
           handleClose();
         }, autoCloseDelay);
+
         return () => clearTimeout(timer);
       }
     } else {
@@ -113,12 +122,7 @@ export default function CustomAlert({
       animationType="none"
       onRequestClose={handleClose}
     >
-      <Animated.View 
-        style={[
-          styles.overlay,
-          { opacity: fadeAnim }
-        ]}
-      >
+      <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
         <TouchableOpacity 
           style={styles.overlayTouch}
           activeOpacity={1}
@@ -132,9 +136,10 @@ export default function CustomAlert({
               transform: [
                 { scale: scaleAnim },
                 { translateY: fadeAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [50, 0]
-                })}
+                    inputRange: [0, 1],
+                    outputRange: [50, 0]
+                  })
+                }
               ]
             }
           ]}
@@ -160,12 +165,8 @@ export default function CustomAlert({
 
           {/* Contenu */}
           <View style={styles.alertContent}>
-            {title && (
-              <Text style={styles.alertTitle}>{title}</Text>
-            )}
-            {message && (
-              <Text style={styles.alertMessage}>{message}</Text>
-            )}
+            {title && <Text style={styles.alertTitle}>{title}</Text>}
+            {message && <Text style={styles.alertMessage}>{message}</Text>}
           </View>
 
           {/* Boutons d'action */}
@@ -213,7 +214,7 @@ export default function CustomAlert({
             </View>
           )}
 
-          {/* Barre de progression pour auto-close */}
+          {/* Progress bar animée */}
           {autoClose && (
             <View style={styles.progressContainer}>
               <Animated.View
@@ -221,11 +222,11 @@ export default function CustomAlert({
                   styles.progressBar,
                   {
                     backgroundColor: config.iconBg,
-                    width: fadeAnim.interpolate({
+                    width: progressAnim.interpolate({
                       inputRange: [0, 1],
-                      outputRange: ['0%', '100%']
-                    })
-                  }
+                      outputRange: [0, width * 0.9], // 90% de largeur écran
+                    }),
+                  },
                 ]}
               />
             </View>
@@ -246,10 +247,7 @@ const styles = StyleSheet.create({
   },
   overlayTouch: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    top: 0, left: 0, right: 0, bottom: 0,
   },
   alertContainer: {
     backgroundColor: '#FFFFFF',
@@ -333,9 +331,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FFFFFF',
   },
-  destructiveButton: {
-    // Style handled by gradient
-  },
+  destructiveButton: {},
   destructiveButtonText: {
     fontSize: 16,
     fontWeight: '600',
