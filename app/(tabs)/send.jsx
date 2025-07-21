@@ -16,32 +16,19 @@ export default function SendScreen() {
   const [amount, setAmount] = useState('');
   const [selectedService, setSelectedService] = useState('');
   const [selectedBeneficiary, setSelectedBeneficiary] = useState(null);
-  const [selectedCard, setSelectedCard] = useState(null);
   const [beneficiaries, setBeneficiaries] = useState([]);
-  const [cards, setCards] = useState([]);
+  const [userCard, setUserCard] = useState(null);
 
   useEffect(() => {
     setBeneficiaries(mockBeneficiaries);
-    // Simuler des cartes existantes
-    setCards([
-      {
-        id: '1',
-        cardNumber: '**** **** **** 1234',
-        cardType: 'visa',
-        isDefault: true,
-      },
-      {
-        id: '2',
-        cardNumber: '**** **** **** 5678',
-        cardType: 'mastercard',
-        isDefault: false,
-      },
-    ]);
-    // Sélectionner la carte par défaut
-    const defaultCard = cards.find(card => card.isDefault);
-    if (defaultCard) {
-      setSelectedCard(defaultCard);
-    }
+    // Simuler la carte de l'utilisateur
+    setUserCard({
+      id: '1',
+      cardNumber: '**** **** **** 1234',
+      cardType: 'visa',
+      cardholderName: 'AMADOU DIALLO',
+      expiryDate: '12/26',
+    });
   }, []);
 
   const services = selectedCountry ? selectedCountry.services : [];
@@ -64,11 +51,11 @@ export default function SendScreen() {
       Alert.alert('Erreur', 'Veuillez sélectionner un bénéficiaire');
       return;
     }
-    if (step === 4 && !selectedCard) {
-      Alert.alert('Erreur', 'Veuillez sélectionner une carte de paiement');
+    if (step === 4 && !userCard) {
+      Alert.alert('Erreur', 'Aucune carte de paiement enregistrée');
       return;
     }
-    if (step < 5) {
+    if (step < 4) {
       setStep(step + 1);
     }
   };
@@ -76,7 +63,7 @@ export default function SendScreen() {
   const handleSend = () => {
     Alert.alert(
       'Confirmer l\'envoi',
-      `Envoyer ${formatCurrency(parseFloat(amount), 'EUR')} à ${selectedBeneficiary?.name} via ${selectedServiceData?.name} avec la carte ${selectedCard?.cardNumber} ?`,
+      `Envoyer ${formatCurrency(parseFloat(amount), 'EUR')} à ${selectedBeneficiary?.name} via ${selectedServiceData?.name} avec la carte ${userCard?.cardNumber} ?`,
       [
         { text: 'Annuler', style: 'cancel' },
         { 
@@ -87,7 +74,6 @@ export default function SendScreen() {
             setAmount('');
             setSelectedService('');
             setSelectedBeneficiary(null);
-            setSelectedCard(null);
           }
         }
       ]
@@ -96,7 +82,7 @@ export default function SendScreen() {
 
   const renderStepIndicator = () => (
     <View style={styles.stepIndicator}>
-      {[1, 2, 3, 4, 5].map((stepNum) => (
+      {[1, 2, 3, 4].map((stepNum) => (
         <View key={stepNum} style={styles.stepContainer}>
           <View style={[
             styles.stepCircle,
@@ -113,7 +99,7 @@ export default function SendScreen() {
               </Text>
             )}
           </View>
-          {stepNum < 5 && (
+          {stepNum < 4 && (
             <View style={[
               styles.stepLine,
               stepNum < step ? styles.stepLineActive : styles.stepLineInactive
@@ -245,47 +231,6 @@ export default function SendScreen() {
     </View>
   );
 
-  const renderCardStep = () => (
-    <View style={styles.stepContent}>
-      <Text style={styles.stepTitle}>Choisir la carte de paiement</Text>
-      
-      {cards.map((card) => (
-        <TouchableOpacity
-          key={card.id}
-          style={[
-            styles.cardOption,
-            selectedCard?.id === card.id && styles.cardOptionSelected
-          ]}
-          onPress={() => setSelectedCard(card)}
-        >
-          <View style={styles.cardInfo}>
-            <CreditCard size={20} color="#FF6B35" />
-            <View style={styles.cardDetails}>
-              <Text style={styles.cardNumber}>{card.cardNumber}</Text>
-              <Text style={styles.cardType}>{card.cardType.toUpperCase()}</Text>
-            </View>
-            {card.isDefault && (
-              <View style={styles.defaultBadge}>
-                <Text style={styles.defaultBadgeText}>Défaut</Text>
-              </View>
-            )}
-            {selectedCard?.id === card.id && (
-              <Check size={20} color="#2E8B57" />
-            )}
-          </View>
-        </TouchableOpacity>
-      ))}
-
-      <TouchableOpacity 
-        style={styles.addCardButton}
-        onPress={() => router.push('/(tabs)/cards')}
-      >
-        <Plus size={20} color="#FF6B35" />
-        <Text style={styles.addCardButtonText}>Ajouter une nouvelle carte</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
   const renderSummaryStep = () => (
     <View style={styles.stepContent}>
       <Text style={styles.stepTitle}>Résumé du transfert</Text>
@@ -326,9 +271,27 @@ export default function SendScreen() {
       <View style={styles.summaryCard}>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Carte de paiement</Text>
-          <Text style={styles.summaryValue}>{selectedCard?.cardNumber}</Text>
+          <Text style={styles.summaryValue}>{userCard?.cardNumber}</Text>
+        </View>
+        <View style={styles.summaryRow}>
+          <Text style={styles.summaryLabel}>Titulaire</Text>
+          <Text style={styles.summaryValue}>{userCard?.cardholderName}</Text>
         </View>
       </View>
+
+      {!userCard && (
+        <View style={styles.noCardWarning}>
+          <Text style={styles.warningText}>
+            Aucune carte enregistrée. Veuillez ajouter une carte de paiement.
+          </Text>
+          <TouchableOpacity 
+            style={styles.addCardButton}
+            onPress={() => router.push('/(tabs)/cards')}
+          >
+            <Text style={styles.addCardButtonText}>Ajouter une carte</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 
@@ -350,8 +313,7 @@ export default function SendScreen() {
         {step === 1 && renderAmountStep()}
         {step === 2 && renderServiceStep()}
         {step === 3 && renderBeneficiaryStep()}
-        {step === 4 && renderCardStep()}
-        {step === 5 && renderSummaryStep()}
+        {step === 4 && renderSummaryStep()}
 
         <View style={styles.actions}>
           {step > 1 && (
@@ -368,7 +330,7 @@ export default function SendScreen() {
               styles.nextButton,
               step === 1 && { flex: 1 }
             ]}
-            onPress={step === 5 ? handleSend : handleNext}
+            onPress={step === 4 ? handleSend : handleNext}
           >
             <LinearGradient
               colors={['#FF6B35', '#FF8A65']}
@@ -377,7 +339,7 @@ export default function SendScreen() {
               end={{ x: 1, y: 1 }}
             >
               <Text style={styles.nextButtonText}>
-                {step === 5 ? 'Envoyer' : 'Suivant'}
+                {step === 4 ? 'Envoyer' : 'Suivant'}
               </Text>
               <ArrowRight size={16} color="#FFFFFF" />
             </LinearGradient>
@@ -643,66 +605,28 @@ const styles = StyleSheet.create({
     color: '#666',
     marginLeft: 4,
   },
-  cardOption: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    borderWidth: 2,
-    borderColor: '#E5E5E5',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-  },
-  cardOptionSelected: {
-    borderColor: '#2E8B57',
-  },
-  cardInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  cardDetails: {
-    flex: 1,
-  },
-  cardNumber: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 2,
-  },
-  cardType: {
-    fontSize: 12,
-    color: '#666',
-  },
-  defaultBadge: {
-    backgroundColor: '#E8F5E8',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  defaultBadgeText: {
-    fontSize: 10,
-    color: '#2E8B57',
-    fontWeight: '600',
-  },
-  addCardButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+  noCardWarning: {
     backgroundColor: '#FFF3F0',
-    borderRadius: 12,
     padding: 16,
-    borderWidth: 2,
-    borderColor: '#FF6B35',
-    borderStyle: 'dashed',
-    gap: 8,
+    borderRadius: 12,
+    marginTop: 16,
+    alignItems: 'center',
   },
-  addCardButtonText: {
+  warningText: {
     fontSize: 14,
     color: '#FF6B35',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  addCardButton: {
+    backgroundColor: '#FF6B35',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  addCardButtonText: {
+    fontSize: 12,
+    color: '#FFFFFF',
     fontWeight: '500',
   },
   summaryCard: {
