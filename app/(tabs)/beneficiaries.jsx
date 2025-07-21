@@ -4,8 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { User, Plus, CreditCard as Edit2, Trash2, Phone, MapPin, X } from 'lucide-react-native';
 import { mockBeneficiaries } from '@/services/mockData';
+import { useAlert } from '@/components/AlertProvider';
 
 export default function BeneficiariesScreen() {
+  const { showError, showSuccess, showConfirm } = useAlert();
   const [beneficiaries, setBeneficiaries] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingBeneficiary, setEditingBeneficiary] = useState(null);
@@ -31,7 +33,7 @@ export default function BeneficiariesScreen() {
 
   const handleAddBeneficiary = () => {
     if (!formData.name || !formData.phone || !formData.location) {
-      Alert.alert('Erreur', 'Veuillez remplir tous les champs');
+      showError('Erreur', 'Veuillez remplir tous les champs');
       return;
     }
 
@@ -43,7 +45,7 @@ export default function BeneficiariesScreen() {
     setBeneficiaries([...beneficiaries, newBeneficiary]);
     setShowAddModal(false);
     resetForm();
-    Alert.alert('Succès', 'Bénéficiaire ajouté avec succès');
+    showSuccess('Succès', 'Bénéficiaire ajouté avec succès');
   };
 
   const handleEditBeneficiary = (beneficiary) => {
@@ -59,7 +61,7 @@ export default function BeneficiariesScreen() {
 
   const handleUpdateBeneficiary = () => {
     if (!formData.name || !formData.phone || !formData.location) {
-      Alert.alert('Erreur', 'Veuillez remplir tous les champs');
+      showError('Erreur', 'Veuillez remplir tous les champs');
       return;
     }
 
@@ -71,24 +73,17 @@ export default function BeneficiariesScreen() {
     setShowAddModal(false);
     setEditingBeneficiary(null);
     resetForm();
-    Alert.alert('Succès', 'Bénéficiaire modifié avec succès');
+    showSuccess('Succès', 'Bénéficiaire modifié avec succès');
   };
 
   const handleDeleteBeneficiary = (id) => {
-    Alert.alert(
+    showConfirm(
       'Confirmer la suppression',
       'Êtes-vous sûr de vouloir supprimer ce bénéficiaire ?',
-      [
-        { text: 'Annuler', style: 'cancel' },
-        {
-          text: 'Supprimer',
-          style: 'destructive',
-          onPress: () => {
-            setBeneficiaries(beneficiaries.filter(b => b.id !== id));
-            Alert.alert('Succès', 'Bénéficiaire supprimé');
-          },
-        },
-      ]
+      () => {
+        setBeneficiaries(beneficiaries.filter(b => b.id !== id));
+        showSuccess('Succès', 'Bénéficiaire supprimé');
+      }
     );
   };
 

@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAlert } from '@/components/AlertProvider';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -13,17 +14,18 @@ export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { login } = useAuth();
+  const { showError, showSuccess } = useAlert();
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Erreur', 'Veuillez remplir tous les champs');
+      showError('Erreur', 'Veuillez remplir tous les champs');
       return;
     }
 
     // Validation email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      Alert.alert('Erreur', 'Veuillez saisir une adresse email valide');
+      showError('Erreur', 'Veuillez saisir une adresse email valide');
       return;
     }
 
@@ -33,14 +35,16 @@ export default function LoginScreen() {
       const result = await login(email, password);
       
       if (result.success) {
-        Alert.alert('Succès', 'Connexion réussie !', [
-          { text: 'OK', onPress: () => router.replace('/(tabs)') }
-        ]);
+        showSuccess('Succès', 'Connexion réussie !', {
+          buttons: [
+            { text: 'Continuer', onPress: () => router.replace('/(tabs)') }
+          ]
+        });
       } else {
-        Alert.alert('Erreur', 'Email ou mot de passe incorrect');
+        showError('Erreur', 'Email ou mot de passe incorrect');
       }
     } catch (error) {
-      Alert.alert('Erreur', 'Une erreur est survenue lors de la connexion');
+      showError('Erreur', 'Une erreur est survenue lors de la connexion');
     } finally {
       setIsLoading(false);
     }

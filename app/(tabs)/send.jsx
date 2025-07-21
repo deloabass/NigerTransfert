@@ -8,10 +8,12 @@ import { mockBeneficiaries } from '@/services/mockData';
 import { useRouter } from 'expo-router';
 import { useCountry } from '@/contexts/CountryContext';
 import CountrySelector from '@/components/CountrySelector';
+import { useAlert } from '@/components/AlertProvider';
 
 export default function SendScreen() {
   const router = useRouter();
   const { selectedCountry } = useCountry();
+  const { showError, showConfirm, showSuccess } = useAlert();
   const [step, setStep] = useState(1);
   const [amount, setAmount] = useState('');
   const [selectedService, setSelectedService] = useState('');
@@ -40,19 +42,19 @@ export default function SendScreen() {
 
   const handleNext = () => {
     if (step === 1 && (!amount || parseFloat(amount) <= 0)) {
-      Alert.alert('Erreur', 'Veuillez saisir un montant valide');
+      showError('Erreur', 'Veuillez saisir un montant valide');
       return;
     }
     if (step === 2 && !selectedService) {
-      Alert.alert('Erreur', 'Veuillez sélectionner un service');
+      showError('Erreur', 'Veuillez sélectionner un service');
       return;
     }
     if (step === 3 && !selectedBeneficiary) {
-      Alert.alert('Erreur', 'Veuillez sélectionner un bénéficiaire');
+      showError('Erreur', 'Veuillez sélectionner un bénéficiaire');
       return;
     }
     if (step === 4 && !userCard) {
-      Alert.alert('Erreur', 'Aucune carte de paiement enregistrée');
+      showError('Erreur', 'Aucune carte de paiement enregistrée');
       return;
     }
     if (step < 4) {
@@ -61,22 +63,16 @@ export default function SendScreen() {
   };
 
   const handleSend = () => {
-    Alert.alert(
+    showConfirm(
       'Confirmer l\'envoi',
       `Envoyer ${formatCurrency(parseFloat(amount), 'EUR')} à ${selectedBeneficiary?.name} via ${selectedServiceData?.name} avec la carte ${userCard?.cardNumber} ?`,
-      [
-        { text: 'Annuler', style: 'cancel' },
-        { 
-          text: 'Confirmer', 
-          onPress: () => {
-            Alert.alert('Succès', 'Transfert initié avec succès!');
-            setStep(1);
-            setAmount('');
-            setSelectedService('');
-            setSelectedBeneficiary(null);
-          }
-        }
-      ]
+      () => {
+        showSuccess('Succès', 'Transfert initié avec succès!');
+        setStep(1);
+        setAmount('');
+        setSelectedService('');
+        setSelectedBeneficiary(null);
+      }
     );
   };
 

@@ -3,8 +3,10 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Modal, Tex
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CreditCard, Plus, Trash2, X, Lock, Calendar, User } from 'lucide-react-native';
+import { useAlert } from '@/components/AlertProvider';
 
 export default function CardsScreen() {
+  const { showError, showSuccess, showConfirm } = useAlert();
   const [cards, setCards] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -47,14 +49,14 @@ export default function CardsScreen() {
 
   const handleAddCard = () => {
     if (!formData.cardNumber || !formData.expiryDate || !formData.cvv || !formData.cardholderName) {
-      Alert.alert('Erreur', 'Veuillez remplir tous les champs');
+      showError('Erreur', 'Veuillez remplir tous les champs');
       return;
     }
 
     // Validation basique du numéro de carte
     const cardNumberClean = formData.cardNumber.replace(/\s/g, '');
     if (cardNumberClean.length !== 16) {
-      Alert.alert('Erreur', 'Le numéro de carte doit contenir 16 chiffres');
+      showError('Erreur', 'Le numéro de carte doit contenir 16 chiffres');
       return;
     }
 
@@ -74,24 +76,17 @@ export default function CardsScreen() {
     setCards([...cards, newCard]);
     setShowAddModal(false);
     resetForm();
-    Alert.alert('Succès', 'Carte ajoutée avec succès');
+    showSuccess('Succès', 'Carte ajoutée avec succès');
   };
 
   const handleDeleteCard = (id) => {
-    Alert.alert(
+    showConfirm(
       'Confirmer la suppression',
       'Êtes-vous sûr de vouloir supprimer cette carte ?',
-      [
-        { text: 'Annuler', style: 'cancel' },
-        {
-          text: 'Supprimer',
-          style: 'destructive',
-          onPress: () => {
-            setCards(cards.filter(card => card.id !== id));
-            Alert.alert('Succès', 'Carte supprimée');
-          },
-        },
-      ]
+      () => {
+        setCards(cards.filter(card => card.id !== id));
+        showSuccess('Succès', 'Carte supprimée');
+      }
     );
   };
 
@@ -100,7 +95,7 @@ export default function CardsScreen() {
       ...card,
       isDefault: card.id === id
     })));
-    Alert.alert('Succès', 'Carte définie par défaut');
+    showSuccess('Succès', 'Carte définie par défaut');
   };
 
   const getCardIcon = (type) => {
