@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Animated, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { CircleCheck as CheckCircle, TriangleAlert as AlertTriangle, XCircle, Info, X } from 'lucide-react-native';
+import { CircleCheck as CheckCircle, TriangleAlert as AlertTriangle, Circle as XCircle, Info, X } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
 
