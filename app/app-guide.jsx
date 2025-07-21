@@ -13,175 +13,269 @@ export default function AppGuideScreen() {
 
   const guideSteps = [
     {
-      title: "Bienvenue dans Niger Money Transfer",
-      description: "Découvrez toutes les fonctionnalités de votre application de transfert d'argent internationale",
+      title: "🌍 Niger Money Transfer",
+      description: "L'application de référence pour les transferts d'argent vers l'Afrique de l'Ouest depuis l'Europe",
       icon: <Home size={60} color="#FF6B35" />,
       features: [
-        "Transferts vers 15 pays d'Afrique de l'Ouest",
-        "Sécurité de niveau bancaire",
-        "Frais transparents et compétitifs",
-        "Support 24h/24 et 7j/7"
+        "Transferts vers 7 pays d'Afrique de l'Ouest (Niger, Sénégal, Mali, Burkina Faso, Côte d'Ivoire, Ghana, Nigeria)",
+        "Plus de 15 services de paiement mobile partenaires",
+        "Sécurité de niveau bancaire avec chiffrement AES-256",
+        "Frais transparents à partir de 1.5% seulement",
+        "Support client multilingue 24h/24 et 7j/7",
+        "Conformité totale aux réglementations européennes et africaines",
+        "Interface disponible en français, anglais et langues locales"
       ]
     },
     {
-      title: "🏠 Page d'Accueil",
-      description: "Votre tableau de bord principal",
+      title: "🏠 Tableau de Bord Principal",
+      description: "Votre centre de contrôle pour tous vos transferts",
       icon: <Home size={60} color="#2E8B57" />,
       features: [
-        "Consultez votre solde (masquable pour la confidentialité)",
-        "Bouton rapide 'Envoyer de l'argent'",
-        "Transactions récentes avec statuts",
-        "Statistiques mensuelles",
-        "Bouton 'Choisir un pays' pour sélectionner la destination"
+        "Solde disponible en temps réel (masquable d'un clic pour la confidentialité)",
+        "Conversion automatique EUR ↔ devise locale du pays sélectionné",
+        "Bouton d'action rapide 'Envoyer de l'argent' toujours accessible",
+        "Affichage du pays de destination sélectionné avec possibilité de changement",
+        "Historique des 3 dernières transactions avec statuts en temps réel",
+        "Statistiques mensuelles : montant envoyé, nombre de transferts, frais payés",
+        "Accès rapide au guide de l'application et aux paramètres",
+        "Notifications importantes et alertes de sécurité"
       ],
       navigation: "Onglet 'Accueil' en bas de l'écran"
     },
     {
-      title: "💸 Envoi d'Argent",
-      description: "Processus en 5 étapes simples",
+      title: "💸 Processus de Transfert",
+      description: "Système guidé en 5 étapes pour des transferts sécurisés",
       icon: <Send size={60} color="#FF6B35" />,
       features: [
-        "Étape 1: Saisissez le montant en EUR",
-        "Étape 2: Choisissez le service (MyNITA ou Amana-ta)",
-        "Étape 3: Sélectionnez le bénéficiaire",
-        "Étape 4: Choisissez votre carte de paiement",
-        "Étape 5: Confirmez et envoyez",
-        "Conversion automatique EUR → XOF",
-        "Calcul des frais en temps réel"
+        "Étape 1: Saisie du montant en EUR avec validation des limites",
+        "Étape 2: Sélection du service de paiement selon le pays choisi",
+        "Étape 3: Choix du bénéficiaire (existant ou nouveau)",
+        "Étape 4: Sélection de la carte de paiement (Visa/Mastercard)",
+        "Étape 5: Résumé complet et confirmation finale",
+        "Conversion automatique EUR → devise locale en temps réel",
+        "Calcul transparent des frais selon le service choisi",
+        "Indicateur de progression visuel à chaque étape",
+        "Possibilité de retour en arrière à tout moment",
+        "Génération automatique d'un numéro de référence unique"
       ],
       navigation: "Onglet 'Envoyer' ou bouton depuis l'accueil"
     },
     {
-      title: "📊 Historique",
-      description: "Suivez toutes vos transactions",
+      title: "📊 Gestion de l'Historique",
+      description: "Suivi complet et détaillé de toutes vos transactions",
       icon: <History size={60} color="#666" />,
       features: [
-        "Liste complète des transferts",
-        "Filtres par statut (Terminé, En attente, Échec)",
-        "Recherche par bénéficiaire ou service",
-        "Détails complets de chaque transaction",
-        "Statistiques agrégées",
-        "Téléchargement des reçus",
-        "Références de transaction"
+        "Liste chronologique complète de tous vos transferts",
+        "Filtres avancés : par statut (Terminé, En attente, Échec), par période, par montant",
+        "Recherche intelligente par nom de bénéficiaire, service ou référence",
+        "Détails exhaustifs : montant envoyé, frais, montant reçu, taux de change",
+        "Statuts en temps réel avec notifications push",
+        "Statistiques détaillées : total envoyé, frais payés, nombre de transactions",
+        "Téléchargement de reçus officiels au format PDF",
+        "Numéros de référence pour le suivi auprès des partenaires",
+        "Historique d'exportation pour la comptabilité personnelle",
+        "Alertes automatiques en cas de problème de transaction"
       ],
       navigation: "Onglet 'Historique'"
     },
     {
-      title: "💳 Gestion des Cartes",
-      description: "Vos moyens de paiement",
+      title: "💳 Moyens de Paiement",
+      description: "Gestion sécurisée de vos cartes bancaires",
       icon: <CreditCard size={60} color="#3B82F6" />,
       features: [
-        "Ajout de nouvelles cartes (Visa, Mastercard)",
-        "Gestion des cartes existantes",
-        "Définir une carte par défaut",
-        "Suppression sécurisée",
-        "Chiffrement des données bancaires",
-        "Validation en temps réel"
+        "Support complet Visa et Mastercard (débit et crédit)",
+        "Ajout sécurisé avec validation en temps réel",
+        "Stockage chiffré selon les standards PCI DSS",
+        "Gestion de cartes multiples avec carte par défaut",
+        "Suppression sécurisée avec confirmation",
+        "Vérification automatique de validité et de fonds",
+        "Historique des paiements par carte",
+        "Alertes de sécurité en cas d'activité suspecte",
+        "Sauvegarde automatique pour les futurs transferts",
+        "Compatibilité avec Apple Pay et Google Pay (bientôt)"
       ],
       navigation: "Onglet 'Cartes'"
     },
     {
-      title: "👥 Bénéficiaires",
-      description: "Gérez vos contacts au Niger",
+      title: "👥 Carnet de Bénéficiaires",
+      description: "Gestion complète de vos contacts dans tous les pays",
       icon: <Users size={60} color="#8B5CF6" />,
       features: [
-        "Ajout de nouveaux bénéficiaires",
-        "Informations complètes (nom, téléphone, localisation)",
-        "Service préféré par bénéficiaire",
-        "Modification et suppression",
-        "Organisation par service",
-        "Recherche rapide"
+        "Ajout illimité de bénéficiaires dans tous les pays supportés",
+        "Informations complètes : nom, téléphone, adresse, service préféré",
+        "Photos de profil pour identification rapide",
+        "Historique des transferts par bénéficiaire",
+        "Groupes et catégories personnalisables (famille, amis, business)",
+        "Validation automatique des numéros de téléphone par pays",
+        "Synchronisation sécurisée entre appareils",
+        "Sauvegarde et restauration des contacts",
+        "Recherche intelligente et filtres avancés",
+        "Favoris pour accès rapide aux contacts fréquents"
       ],
       navigation: "Onglet 'Bénéficiaires'"
     },
     {
-      title: "👤 Profil & Paramètres",
-      description: "Votre compte et préférences",
+      title: "👤 Gestion du Profil",
+      description: "Contrôle total de votre compte et préférences",
       icon: <User size={60} color="#DC2626" />,
       features: [
-        "Informations personnelles",
-        "Statut de vérification KYC",
-        "Paramètres de sécurité",
-        "Notifications et préférences",
-        "Support et aide",
-        "Conditions d'utilisation"
+        "Informations personnelles complètes et modifiables",
+        "Photo de profil et données de contact",
+        "Statut de vérification KYC avec progression détaillée",
+        "Paramètres de sécurité avancés (2FA, biométrie)",
+        "Préférences de notifications granulaires",
+        "Gestion des langues et devises d'affichage",
+        "Historique de connexions et appareils autorisés",
+        "Centre d'aide intégré avec chat en direct",
+        "Accès aux conditions d'utilisation et politique de confidentialité",
+        "Options de fermeture de compte et export de données"
       ],
       navigation: "Onglet 'Profil'"
     },
     {
-      title: "🛡️ Sécurité Avancée",
-      description: "Protection maximale de votre compte",
+      title: "🛡️ Centre de Sécurité",
+      description: "Protection multicouche et surveillance continue",
       icon: <Shield size={60} color="#059669" />,
       features: [
-        "Centre de sécurité avec score en temps réel",
-        "Authentification à deux facteurs (2FA)",
-        "Authentification biométrique",
-        "Surveillance des connexions",
-        "Alertes de sécurité",
-        "Actions d'urgence (blocage de compte)",
-        "Historique d'activité détaillé"
+        "Score de sécurité dynamique avec recommandations personnalisées",
+        "Authentification à deux facteurs (SMS, email, app authenticator)",
+        "Authentification biométrique (empreinte, Face ID, reconnaissance vocale)",
+        "Surveillance continue des connexions et géolocalisation",
+        "Détection automatique d'activités suspectes",
+        "Alertes instantanées par email, SMS et push",
+        "Historique détaillé de toutes les activités de compte",
+        "Actions d'urgence : blocage temporaire, déconnexion globale",
+        "Chiffrement de bout en bout pour toutes les communications",
+        "Conformité RGPD et certifications de sécurité internationales"
       ],
       navigation: "Profil → Centre de sécurité"
     },
     {
-      title: "🌍 Sélection de Pays",
-      description: "15 pays d'Afrique de l'Ouest supportés",
+      title: "🌍 Destinations Disponibles",
+      description: "Réseau étendu couvrant l'Afrique de l'Ouest",
       icon: <MapPin size={60} color="#7C3AED" />,
       features: [
-        "Niger (MyNITA, Amana-ta)",
-        "Sénégal (Orange Money, Wave)",
-        "Mali, Burkina Faso, Côte d'Ivoire",
-        "Ghana, Nigeria, Togo, Bénin",
-        "Guinée, Liberia, Sierra Leone",
-        "Gambie, Guinée-Bissau, Cap-Vert",
-        "Services locaux pour chaque pays",
-        "Devises multiples supportées"
+        "🇳🇪 Niger : MyNITA (officiel), Amana-ta (mobile money)",
+        "🇸🇳 Sénégal : Orange Money, Wave (frais les plus bas)",
+        "🇲🇱 Mali : Orange Money, Moov Money",
+        "🇧🇫 Burkina Faso : Orange Money, Moov Money",
+        "🇨🇮 Côte d'Ivoire : Orange Money, MTN Money",
+        "🇬🇭 Ghana : MTN MoMo, Vodafone Cash",
+        "🇳🇬 Nigeria : Paystack, Flutterwave",
+        "Sélection intelligente du pays avec sauvegarde automatique",
+        "Services adaptés à chaque pays avec tarifs locaux",
+        "Support de 4 devises : XOF, GHS, NGN, EUR",
+        "Expansion continue vers d'autres pays africains"
       ],
       navigation: "Accueil → Choisir un pays"
     },
     {
-      title: "📋 Vérification KYC",
-      description: "Augmentez vos limites de transfert",
+      title: "📋 Processus KYC Complet",
+      description: "Vérification d'identité pour débloquer toutes les fonctionnalités",
       icon: <FileText size={60} color="#EA580C" />,
       features: [
-        "Téléchargement de documents d'identité",
-        "Photo selfie pour vérification",
-        "Processus en 3 étapes simples",
-        "Vérification sous 24h",
-        "Augmentation des limites",
-        "Accès à tous les services",
-        "Frais réduits"
+        "Documents acceptés : passeport, carte d'identité, permis de conduire, carte de séjour",
+        "Téléchargement sécurisé avec guides visuels détaillés",
+        "Vérification par selfie avec détection de vivacité",
+        "Processus guidé en 3 étapes avec assistance en temps réel",
+        "Vérification manuelle par experts sous 24h maximum",
+        "Statut de progression visible en temps réel",
+        "Augmentation immédiate des limites après validation",
+        "Accès à tous les services premium et frais préférentiels",
+        "Conformité totale aux réglementations AML/KYC européennes",
+        "Support dédié pour les cas complexes"
       ],
       navigation: "Profil → Vérification KYC"
     },
     {
-      title: "💰 Limites de Transfert",
-      description: "3 niveaux d'utilisateur",
+      title: "💰 Système de Limites",
+      description: "3 niveaux progressifs selon votre statut de vérification",
       icon: <TrendingUp size={60} color="#0891B2" />,
       features: [
-        "Basique: 500€/jour, 5000€/mois",
-        "Vérifié: 2000€/jour, 25000€/mois",
-        "Premium: 10000€/jour, 150000€/mois",
-        "Suivi de l'utilisation en temps réel",
-        "Progression vers le niveau supérieur",
-        "Fonctionnalités exclusives par niveau"
+        "🥉 Niveau Basique : 500€/jour, 2000€/semaine, 5000€/mois, 300€/transaction",
+        "🥈 Niveau Vérifié : 2000€/jour, 10000€/semaine, 25000€/mois, 1500€/transaction",
+        "🥇 Niveau Premium : 10000€/jour, 50000€/semaine, 150000€/mois, 5000€/transaction",
+        "Suivi en temps réel de l'utilisation avec barres de progression",
+        "Réinitialisation automatique des limites selon les périodes",
+        "Alertes préventives avant d'atteindre les limites",
+        "Fonctionnalités exclusives : frais réduits, support prioritaire",
+        "Possibilité d'augmentation temporaire pour cas exceptionnels",
+        "Historique complet de l'utilisation des limites",
+        "Progression guidée vers le niveau supérieur"
       ],
       navigation: "Profil → Limites de transfert"
     },
     {
-      title: "❓ Support & Aide",
-      description: "Assistance complète 24h/24",
+      title: "❓ Écosystème d'Aide",
+      description: "Support multicanal et ressources complètes",
       icon: <HelpCircle size={60} color="#BE185D" />,
       features: [
-        "FAQ complète par catégorie",
-        "Chat en direct",
-        "Support téléphonique",
-        "Email support",
-        "Formulaire de contact",
-        "Guides détaillés",
-        "Résolution de problèmes"
+        "FAQ interactive avec plus de 50 questions organisées par catégorie",
+        "Moteur de recherche intelligent dans la base de connaissances",
+        "Chat en direct avec agents multilingues (français, anglais, haoussa)",
+        "Support téléphonique 24h/24 avec numéros locaux européens",
+        "Système de tickets par email avec suivi en temps réel",
+        "Guides vidéo étape par étape pour chaque fonctionnalité",
+        "Centre de résolution automatique des problèmes courants",
+        "Communauté d'utilisateurs avec forum de discussion",
+        "Webinaires réguliers sur les nouvelles fonctionnalités",
+        "Support technique spécialisé pour les entreprises"
       ],
       navigation: "Profil → Aide et support ou FAQ"
+    },
+    {
+      title: "🔄 Fonctionnalités Avancées",
+      description: "Outils professionnels et fonctions spécialisées",
+      icon: <TrendingUp size={60} color="#6366F1" />,
+      features: [
+        "Transferts programmés et récurrents (hebdomadaire, mensuel)",
+        "Alertes de taux de change avec notifications personnalisées",
+        "Mode hors ligne pour préparer les transferts sans connexion",
+        "Calculatrice de frais avancée avec comparaison de services",
+        "Exportation de données pour déclarations fiscales",
+        "API pour intégration avec systèmes comptables d'entreprise",
+        "Comptes multi-utilisateurs pour familles et entreprises",
+        "Carnet d'adresses partagé entre membres de famille",
+        "Notifications de réception confirmées par les bénéficiaires",
+        "Système de parrainage avec récompenses"
+      ],
+      navigation: "Fonctionnalités accessibles depuis différents menus"
+    },
+    {
+      title: "📱 Optimisation Mobile",
+      description: "Expérience utilisateur optimisée pour tous les appareils",
+      icon: <Smartphone size={60} color="#10B981" />,
+      features: [
+        "Interface responsive adaptée à tous les écrans (phone, tablet)",
+        "Mode sombre automatique selon les préférences système",
+        "Gestes intuitifs : glisser pour actualiser, pincer pour zoomer",
+        "Raccourcis clavier pour utilisateurs avancés",
+        "Widget iOS/Android pour transferts rapides",
+        "Intégration Siri et Google Assistant pour commandes vocales",
+        "Synchronisation iCloud/Google Drive pour sauvegarde automatique",
+        "Mode économie de données pour connexions limitées",
+        "Optimisation batterie avec mode économie d'énergie",
+        "Accessibilité complète pour utilisateurs malvoyants"
+      ],
+      navigation: "Optimisations automatiques selon l'appareil"
+    },
+    {
+      title: "🌟 Conseils d'Utilisation",
+      description: "Bonnes pratiques pour optimiser votre expérience",
+      icon: <CheckCircle size={60} color="#F59E0B" />,
+      features: [
+        "Vérifiez toujours les informations du bénéficiaire avant envoi",
+        "Utilisez la fonction 'Favoris' pour vos contacts fréquents",
+        "Activez les notifications pour suivre vos transferts en temps réel",
+        "Complétez votre KYC rapidement pour bénéficier de tous les avantages",
+        "Surveillez les taux de change pour optimiser vos transferts",
+        "Utilisez les transferts programmés pour les envois réguliers",
+        "Gardez vos documents d'identité à jour dans votre profil",
+        "Contactez le support dès le moindre doute ou problème",
+        "Partagez l'application avec votre famille pour les transferts groupés",
+        "Consultez régulièrement vos limites pour planifier vos envois"
+      ],
+      navigation: "Conseils intégrés dans toute l'application"
     }
   ];
 

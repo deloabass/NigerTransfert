@@ -3,36 +3,27 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Search, ArrowLeft, MapPin } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { useCountry } from '@/contexts/CountryContext';
+import { westAfricanCountries } from '@/services/countryData';
+import { Alert } from 'react-native';
 
 export default function CountrySelectionScreen() {
   const router = useRouter();
+  const { selectCountry } = useCountry();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const westAfricanCountries = [
-    { code: 'NE', name: 'Niger', flag: '🇳🇪', currency: 'XOF', services: ['MyNITA', 'Amana-ta'] },
-    { code: 'SN', name: 'Sénégal', flag: '🇸🇳', currency: 'XOF', services: ['Orange Money', 'Wave'] },
-    { code: 'ML', name: 'Mali', flag: '🇲🇱', currency: 'XOF', services: ['Orange Money', 'Moov Money'] },
-    { code: 'BF', name: 'Burkina Faso', flag: '🇧🇫', currency: 'XOF', services: ['Orange Money', 'Moov Money'] },
-    { code: 'CI', name: 'Côte d\'Ivoire', flag: '🇨🇮', currency: 'XOF', services: ['Orange Money', 'MTN Money'] },
-    { code: 'GH', name: 'Ghana', flag: '🇬🇭', currency: 'GHS', services: ['MTN MoMo', 'Vodafone Cash'] },
-    { code: 'NG', name: 'Nigeria', flag: '🇳🇬', currency: 'NGN', services: ['Paystack', 'Flutterwave'] },
-    { code: 'TG', name: 'Togo', flag: '🇹🇬', currency: 'XOF', services: ['Moov Money', 'T-Money'] },
-    { code: 'BJ', name: 'Bénin', flag: '🇧🇯', currency: 'XOF', services: ['MTN Money', 'Moov Money'] },
-    { code: 'GN', name: 'Guinée', flag: '🇬🇳', currency: 'GNF', services: ['Orange Money', 'MTN Money'] },
-    { code: 'LR', name: 'Liberia', flag: '🇱🇷', currency: 'LRD', services: ['Orange Money', 'Lonestar Cell'] },
-    { code: 'SL', name: 'Sierra Leone', flag: '🇸🇱', currency: 'SLL', services: ['Orange Money', 'Africell'] },
-    { code: 'GM', name: 'Gambie', flag: '🇬🇲', currency: 'GMD', services: ['QMoney', 'Africell'] },
-    { code: 'GW', name: 'Guinée-Bissau', flag: '🇬🇼', currency: 'XOF', services: ['Orange Money'] },
-    { code: 'CV', name: 'Cap-Vert', flag: '🇨🇻', currency: 'CVE', services: ['Unitel Money'] },
-  ];
 
   const filteredCountries = westAfricanCountries.filter(country =>
     country.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleCountrySelect = (country) => {
-    // Ici vous pouvez sauvegarder le pays sélectionné et rediriger
-    router.back();
+  const handleCountrySelect = async (country) => {
+    await selectCountry(country);
+    Alert.alert(
+      'Pays sélectionné',
+      `Vous avez sélectionné ${country.name}. Les services disponibles sont maintenant mis à jour.`,
+      [{ text: 'OK', onPress: () => router.back() }]
+    );
   };
 
   return (
@@ -77,7 +68,7 @@ export default function CountrySelectionScreen() {
               <View style={styles.servicesContainer}>
                 {country.services.map((service, index) => (
                   <View key={index} style={styles.serviceTag}>
-                    <Text style={styles.serviceText}>{service}</Text>
+                    <Text style={styles.serviceText}>{service.name}</Text>
                   </View>
                 ))}
               </View>

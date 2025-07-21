@@ -6,12 +6,14 @@ import { Send, Eye, EyeOff, TrendingUp, Clock, CircleCheck as CheckCircle, MapPi
 import { useRouter } from 'expo-router';
 import { formatCurrency } from '@/utils/formatters';
 import { mockTransactions } from '@/services/mockData';
+import { useCountry } from '@/contexts/CountryContext';
 
 export default function HomeScreen() {
   const [balance, setBalance] = useState(2450.75);
   const [showBalance, setShowBalance] = useState(true);
   const [recentTransactions, setRecentTransactions] = useState([]);
   const router = useRouter();
+  const { selectedCountry } = useCountry();
 
   useEffect(() => {
     // Simuler le chargement des transactions récentes
@@ -75,6 +77,27 @@ export default function HomeScreen() {
             ≈ {showBalance ? formatCurrency(balance * 656, 'XOF') : '••••••'}
           </Text>
         </LinearGradient>
+
+        {/* Selected Country Display */}
+        {selectedCountry && (
+          <View style={styles.countryDisplay}>
+            <View style={styles.countryInfo}>
+              <Text style={styles.countryFlag}>{selectedCountry.flag}</Text>
+              <View style={styles.countryDetails}>
+                <Text style={styles.countryName}>Destination: {selectedCountry.name}</Text>
+                <Text style={styles.countryServices}>
+                  {selectedCountry.services.length} service(s) disponible(s)
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity 
+              style={styles.changeCountryButton}
+              onPress={() => router.push('/country-selection')}
+            >
+              <Text style={styles.changeCountryText}>Changer</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Quick Actions */}
         <View style={styles.quickActions}>
@@ -341,5 +364,53 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: 12,
     color: '#666',
+  },
+  countryDisplay: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#FFFFFF',
+    margin: 20,
+    marginTop: 10,
+    padding: 16,
+    borderRadius: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  countryInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  countryFlag: {
+    fontSize: 24,
+    marginRight: 12,
+  },
+  countryDetails: {
+    flex: 1,
+  },
+  countryName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 2,
+  },
+  countryServices: {
+    fontSize: 12,
+    color: '#666',
+  },
+  changeCountryButton: {
+    backgroundColor: '#FF6B35',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  changeCountryText: {
+    fontSize: 12,
+    color: '#FFFFFF',
+    fontWeight: '500',
   },
 });

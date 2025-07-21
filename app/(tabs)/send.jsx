@@ -6,9 +6,12 @@ import { ArrowRight, User, Phone, MapPin, CreditCard, Check, Plus } from 'lucide
 import { formatCurrency } from '@/utils/formatters';
 import { mockBeneficiaries } from '@/services/mockData';
 import { useRouter } from 'expo-router';
+import { useCountry } from '@/contexts/CountryContext';
+import CountrySelector from '@/components/CountrySelector';
 
 export default function SendScreen() {
   const router = useRouter();
+  const { selectedCountry } = useCountry();
   const [step, setStep] = useState(1);
   const [amount, setAmount] = useState('');
   const [selectedService, setSelectedService] = useState('');
@@ -41,26 +44,9 @@ export default function SendScreen() {
     }
   }, []);
 
-  const services = [
-    {
-      id: 'mynita',
-      name: 'MyNITA',
-      logo: '🏦',
-      description: 'Service officiel du gouvernement nigérien',
-      fees: 2.5,
-      rate: 656,
-    },
-    {
-      id: 'amana',
-      name: 'Amana-ta',
-      logo: '💳',
-      description: 'Solution de paiement mobile populaire',
-      fees: 1.8,
-      rate: 654,
-    },
-  ];
+  const services = selectedCountry ? selectedCountry.services : [];
 
-  const convertedAmount = amount ? parseFloat(amount) * 656 : 0;
+  const convertedAmount = amount && selectedCountry ? parseFloat(amount) * selectedCountry.rate : 0;
   const selectedServiceData = services.find(s => s.id === selectedService);
   const fees = selectedServiceData ? (parseFloat(amount) * selectedServiceData.fees) / 100 : 0;
   const totalAmount = parseFloat(amount) + fees;
@@ -162,7 +148,24 @@ export default function SendScreen() {
 
   const renderServiceStep = () => (
     <View style={styles.stepContent}>
-      <Text style={styles.stepTitle}>Choisir le service</Text>
+      <Text style={styles.stepTitle}>
+        Services disponibles - {selectedCountry?.name}
+      </Text>
+      
+      {!selectedCountry && (
+        <View style={styles.noCountryWarning}>
+          <Text style={styles.warningText}>
+            Veuillez d'abord sélectionner un pays de destination
+          </Text>
+          <TouchableOpacity 
+            style={styles.selectCountryButton}
+            onPress={() => router.push('/country-selection')}
+          >
+            <Text style={styles.selectCountryButtonText}>Sélectionner un pays</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      
       {services.map((service) => (
         <TouchableOpacity
           key={service.id}
@@ -184,12 +187,23 @@ export default function SendScreen() {
           </View>
           <View style={styles.serviceDetails}>
             <Text style={styles.serviceRate}>
-              Taux: 1 EUR = {service.rate} XOF
+              Taux: 1 EUR = {service.rate} {selectedCountry?.currency}
             </Text>
             <Text style={styles.serviceFees}>
               Frais: {service.fees}%
             </Text>
+            <Text style={styles.serviceTime}>
+              Délai: {service.processingTime}
+            </Text>
           </View>
+          
+          {service.features && (
+            <View style={styles.serviceFeatures}>
+              {service.features.slice(0, 2).map((feature, index) => (
+                <Text key={index} style={styles.serviceFeature}>• {feature}</Text>
+              ))}
+            </View>
+          )}
         </TouchableOpacity>
       ))}
     </View>
@@ -303,7 +317,9 @@ export default function SendScreen() {
         </View>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Montant reçu</Text>
-          <Text style={styles.summaryValue}>{formatCurrency(convertedAmount, 'XOF')}</Text>
+          <Text style={styles.summaryValue}>
+            {formatCurrency(convertedAmount, selectedCountry?.currency || 'XOF')}
+          </Text>
         </View>
       </View>
 
@@ -321,6 +337,13 @@ export default function SendScreen() {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={styles.title}>Envoyer de l'argent</Text>
+          
+          {/* Country Selector */}
+          <View style={styles.countrySection}>
+            <Text style={styles.countryLabel}>Destination :</Text>
+            <CountrySelector style={styles.countrySelector} />
+          </View>
+          
           {renderStepIndicator()}
         </View>
 
@@ -380,7 +403,19 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     color: '#333',
+    marginBottom: 16,
+  },
+  countrySection: {
     marginBottom: 20,
+  },
+  countryLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#333',
+    marginBottom: 8,
+  },
+  countrySelector: {
+    marginBottom: 0,
   },
   stepIndicator: {
     flexDirection: 'row',
@@ -515,6 +550,45 @@ const styles = StyleSheet.create({
   serviceFees: {
     fontSize: 12,
     color: '#666',
+  },
+  serviceTime: {
+    fontSize: 12,
+    color: '#666',
+  },
+  serviceFeatures: {
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#F0F0F0',
+  },
+  serviceFeature: {
+    fontSize: 11,
+    color: '#2E8B57',
+    marginBottom: 2,
+  },
+  noCountryWarning: {
+    backgroundColor: '#FFF3F0',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  warningText: {
+    fontSize: 14,
+    color: '#FF6B35',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  selectCountryButton: {
+    backgroundColor: '#FF6B35',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  selectCountryButtonText: {
+    fontSize: 12,
+    color: '#FFFFFF',
+    fontWeight: '500',
   },
   beneficiaryCard: {
     backgroundColor: '#FFFFFF',
