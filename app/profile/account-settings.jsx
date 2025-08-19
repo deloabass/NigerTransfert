@@ -4,9 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft, User, Mail, Phone, MapPin, Calendar, Save } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { useAlert } from '@/components/AlertProvider';
 
 export default function AccountSettingsScreen() {
   const router = useRouter();
+  const { showError, showConfirm, showSuccess } = useAlert();
   const [formData, setFormData] = useState({
     firstName: 'Amadou',
     lastName: 'Diallo',
@@ -19,7 +21,7 @@ export default function AccountSettingsScreen() {
   });
 
   const handleSave = () => {
-    Alert.alert('Succès', 'Informations mises à jour avec succès');
+    showSuccess('Succès', 'Informations mises à jour avec succès');
   };
 
   return (

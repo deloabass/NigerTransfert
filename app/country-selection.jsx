@@ -6,8 +6,10 @@ import { useRouter } from 'expo-router';
 import { useCountry } from '@/contexts/CountryContext';
 import { westAfricanCountries } from '@/services/countryData';
 import { Alert } from 'react-native';
+import { useAlert } from '@/components/AlertProvider'
 
 export default function CountrySelectionScreen() {
+  const { showError, showConfirm, showSuccess } = useAlert();
   const router = useRouter();
   const { selectCountry } = useCountry();
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,7 +21,7 @@ export default function CountrySelectionScreen() {
 
   const handleCountrySelect = async (country) => {
     await selectCountry(country);
-    Alert.alert(
+    showSuccess(
       'Pays sélectionné',
       `Vous avez sélectionné ${country.name}. Les services disponibles sont maintenant mis à jour.`,
       [{ text: 'OK', onPress: () => router.back() }]
