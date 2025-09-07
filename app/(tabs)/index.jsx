@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Send, Eye, EyeOff, TrendingUp, Clock, CircleCheck as CheckCircle, MapPin, BarChart3, PieChart, Activity } from 'lucide-react-native';
+import { Send, Eye, EyeOff, TrendingUp, Clock, CircleCheck as CheckCircle, MapPin, ChartBar as BarChart3, ChartPie as PieChart, Activity } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { formatCurrency } from '@/utils/formatters';
 import { mockTransactions } from '@/services/mockData';

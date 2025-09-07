@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowLeft, Send, AlertTriangle, CircleHelp as HelpCircle, CreditCard, User, Shield } from 'lucide-react-native';
+import { ArrowLeft, Send, TriangleAlert as AlertTriangle, CircleHelp as HelpCircle, CreditCard, User, Shield } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useAlert } from '@/components/AlertProvider';
 
