@@ -4,11 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { User, Settings, Shield, Bell, CircleHelp as HelpCircle, FileText, LogOut, ChevronRight, CircleCheck as CheckCircle, Circle as XCircle, Camera, CreditCard, Smartphone, Lock, BookOpen } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import ProfileImagePicker from '@/components/ProfileImagePicker';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [biometricEnabled, setBiometricEnabled] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
 
   const userInfo = {
     name: 'Amadou Diallo',
@@ -79,7 +81,7 @@ export default function ProfileScreen() {
       icon: <HelpCircle size={20} color="#666" />,
       title: 'Aide et support',
       subtitle: 'FAQ, contactez-nous',
-      action: () => router.push('/profile/help-support'),
+      action: () => router.push('/support-tickets'),
     },
     {
       icon: <FileText size={20} color="#666" />,
@@ -129,12 +131,11 @@ export default function ProfileScreen() {
           >
             <View style={styles.profileHeader}>
               <View style={styles.avatarContainer}>
-                <View style={styles.avatar}>
-                  <User size={32} color="#FFFFFF" />
-                </View>
-                <TouchableOpacity style={styles.cameraButton}>
-                  <Camera size={16} color="#FFFFFF" />
-                </TouchableOpacity>
+                <ProfileImagePicker
+                  currentImage={profileImage}
+                  onImageSelect={setProfileImage}
+                  onImageRemove={() => setProfileImage(null)}
+                />
               </View>
               <View style={styles.userInfoContainer}>
                 <Text style={styles.userName}>{userInfo.name}</Text>
@@ -289,6 +290,7 @@ const styles = StyleSheet.create({
   avatarContainer: {
     position: 'relative',
     marginRight: 16,
+    alignItems: 'center',
   },
   avatar: {
     width: 64,

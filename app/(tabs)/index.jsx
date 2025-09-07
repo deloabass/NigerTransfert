@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Send, Eye, EyeOff, TrendingUp, Clock, CircleCheck as CheckCircle, MapPin } from 'lucide-react-native';
+import { Send, Eye, EyeOff, TrendingUp, Clock, CircleCheck as CheckCircle, MapPin, BarChart3, PieChart, Activity } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { formatCurrency } from '@/utils/formatters';
 import { mockTransactions } from '@/services/mockData';
 import { useCountry } from '@/contexts/CountryContext';
 
+const { width } = Dimensions.get('window');
+
 export default function HomeScreen() {
   const [balance, setBalance] = useState(2450.75);
   const [showBalance, setShowBalance] = useState(true);
   const [recentTransactions, setRecentTransactions] = useState([]);
+  const [monthlyStats, setMonthlyStats] = useState({
+    totalSent: 1250,
+    totalTransactions: 7,
+    totalFees: 8.50,
+    avgAmount: 178.57,
+    successRate: 95.2,
+  });
   const router = useRouter();
   const { selectedCountry } = useCountry();
 
@@ -170,20 +179,82 @@ export default function HomeScreen() {
         </View>
 
         {/* Statistics */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Ce mois-ci</Text>
-          <View style={styles.statsContainer}>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>€1,250</Text>
-              <Text style={styles.statLabel}>Envoyé</Text>
+        <View style={styles.statsSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Statistiques du mois</Text>
+            <TouchableOpacity onPress={() => router.push('/analytics')}>
+              <BarChart3 size={20} color="#FF6B35" />
+            </TouchableOpacity>
+          </View>
+          
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.statsScroll}>
+            <View style={styles.statCard}>
+              <LinearGradient
+                colors={['#FF6B35', '#FF8A65']}
+                style={styles.statGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              >
+                <TrendingUp size={24} color="#FFFFFF" />
+                <Text style={styles.statValue}>{formatCurrency(monthlyStats.totalSent, 'EUR')}</Text>
+                <Text style={styles.statLabel}>Total envoyé</Text>
+              </LinearGradient>
             </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>7</Text>
-              <Text style={styles.statLabel}>Transferts</Text>
+            
+            <View style={styles.statCard}>
+              <LinearGradient
+                colors={['#2E8B57', '#4CAF50']}
+                style={styles.statGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              >
+                <Activity size={24} color="#FFFFFF" />
+                <Text style={styles.statValue}>{monthlyStats.totalTransactions}</Text>
+                <Text style={styles.statLabel}>Transferts</Text>
+              </LinearGradient>
             </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>€8.50</Text>
-              <Text style={styles.statLabel}>Frais</Text>
+            
+            <View style={styles.statCard}>
+              <LinearGradient
+                colors={['#3B82F6', '#60A5FA']}
+                style={styles.statGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              >
+                <PieChart size={24} color="#FFFFFF" />
+                <Text style={styles.statValue}>{formatCurrency(monthlyStats.avgAmount, 'EUR')}</Text>
+                <Text style={styles.statLabel}>Montant moyen</Text>
+              </LinearGradient>
+            </View>
+            
+            <View style={styles.statCard}>
+              <LinearGradient
+                colors={['#8B5CF6', '#A78BFA']}
+                style={styles.statGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              >
+                <CheckCircle size={24} color="#FFFFFF" />
+                <Text style={styles.statValue}>{monthlyStats.successRate}%</Text>
+                <Text style={styles.statLabel}>Taux de succès</Text>
+              </LinearGradient>
+            </View>
+          </ScrollView>
+        </View>
+
+        {/* Quick Insights */}
+        <View style={styles.insightsSection}>
+          <Text style={styles.sectionTitle}>Aperçu rapide</Text>
+          <View style={styles.insightsGrid}>
+            <View style={styles.insightCard}>
+              <Text style={styles.insightValue}>{formatCurrency(monthlyStats.totalFees, 'EUR')}</Text>
+              <Text style={styles.insightLabel}>Frais payés ce mois</Text>
+              <Text style={styles.insightChange}>-12% vs mois dernier</Text>
+            </View>
+            <View style={styles.insightCard}>
+              <Text style={styles.insightValue}>2.3 min</Text>
+              <Text style={styles.insightLabel}>Temps moyen</Text>
+              <Text style={styles.insightChange}>+5% plus rapide</Text>
             </View>
           </View>
         </View>
@@ -356,14 +427,72 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statValue: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#FFFFFF',
+    opacity: 0.9,
+    textAlign: 'center',
+  },
+  statsSection: {
+    margin: 20,
+    marginTop: 0,
+  },
+  statsScroll: {
+    marginTop: 16,
+  },
+  statCard: {
+    width: 140,
+    marginRight: 12,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  statGradient: {
+    padding: 20,
+    alignItems: 'center',
+    minHeight: 120,
+    justifyContent: 'center',
+  },
+  insightsSection: {
+    margin: 20,
+    marginTop: 0,
+  },
+  insightsGrid: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 16,
+  },
+  insightCard: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  insightValue: {
     fontSize: 20,
     fontWeight: '700',
     color: '#333',
     marginBottom: 4,
   },
-  statLabel: {
+  insightLabel: {
     fontSize: 12,
     color: '#666',
+    marginBottom: 4,
+  },
+  insightChange: {
+    fontSize: 11,
+    color: '#2E8B57',
+    fontWeight: '500',
   },
   countryDisplay: {
     flexDirection: 'row',

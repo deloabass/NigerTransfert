@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowRight, User, Phone, MapPin, CreditCard, Check, Plus } from 'lucide-react-native';
+import { ArrowRight, User, Phone, MapPin, CreditCard, Check, Plus, Search } from 'lucide-react-native';
 import { formatCurrency } from '@/utils/formatters';
 import { mockBeneficiaries } from '@/services/mockData';
 import { useRouter } from 'expo-router';
 import { useCountry } from '@/contexts/CountryContext';
 import CountrySelector from '@/components/CountrySelector';
+import CitySelector from '@/components/CitySelector';
+import BeneficiarySearchModal from '@/components/BeneficiarySearchModal';
+import CardPaymentModal from '@/components/CardPaymentModal';
 import { useAlert } from '@/components/AlertProvider';
 
 export default function SendScreen() {
@@ -18,19 +21,14 @@ export default function SendScreen() {
   const [amount, setAmount] = useState('');
   const [selectedService, setSelectedService] = useState('');
   const [selectedBeneficiary, setSelectedBeneficiary] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(null);
   const [beneficiaries, setBeneficiaries] = useState([]);
-  const [userCard, setUserCard] = useState(null);
+  const [showBeneficiaryModal, setShowBeneficiaryModal] = useState(false);
+  const [showCardModal, setShowCardModal] = useState(false);
+  const [cardData, setCardData] = useState(null);
 
   useEffect(() => {
     setBeneficiaries(mockBeneficiaries);
-    // Simuler la carte de l'utilisateur
-    setUserCard({
-      id: '1',
-      cardNumber: '**** **** **** 1234',
-      cardType: 'visa',
-      cardholderName: 'AMADOU DIALLO',
-      expiryDate: '12/26',
-    });
   }, []);
 
   const services = selectedCountry ? selectedCountry.services : [];
@@ -53,8 +51,8 @@ export default function SendScreen() {
       showError('Erreur', 'Veuillez sélectionner un bénéficiaire');
       return;
     }
-    if (step === 4 && !userCard) {
-      showError('Erreur', 'Aucune carte de paiement enregistrée');
+    if (step === 4 && !cardData) {
+      showError('Erreur', 'Veuillez saisir vos informations de carte');
       return;
     }
     if (step < 4) {
@@ -65,13 +63,15 @@ export default function SendScreen() {
   const handleSend = () => {
     showConfirm(
       'Confirmer l\'envoi',
-      `Envoyer ${formatCurrency(parseFloat(amount), 'EUR')} à ${selectedBeneficiary?.name} via ${selectedServiceData?.name} avec la carte ${userCard?.cardNumber} ?`,
+      `Envoyer ${formatCurrency(parseFloat(amount), 'EUR')} à ${selectedBeneficiary?.name} via ${selectedServiceData?.name} ?`,
       () => {
         showSuccess('Succès', 'Transfert initié avec succès!');
         setStep(1);
         setAmount('');
         setSelectedService('');
         setSelectedBeneficiary(null);
+        setSelectedCity(null);
+        setCardData(null);
       }
     );
   };
@@ -194,36 +194,47 @@ export default function SendScreen() {
   const renderBeneficiaryStep = () => (
     <View style={styles.stepContent}>
       <Text style={styles.stepTitle}>Sélectionner le bénéficiaire</Text>
-      {beneficiaries.map((beneficiary) => (
-        <TouchableOpacity
-          key={beneficiary.id}
-          style={[
-            styles.beneficiaryCard,
-            selectedBeneficiary?.id === beneficiary.id && styles.beneficiaryCardSelected
-          ]}
-          onPress={() => setSelectedBeneficiary(beneficiary)}
-        >
+      
+      <TouchableOpacity
+        style={styles.searchBeneficiaryButton}
+        onPress={() => setShowBeneficiaryModal(true)}
+      >
+        <Search size={20} color="#FF6B35" />
+        <Text style={styles.searchBeneficiaryText}>
+          {selectedBeneficiary ? selectedBeneficiary.name : 'Rechercher ou ajouter un bénéficiaire'}
+        </Text>
+      </TouchableOpacity>
+
+      {selectedBeneficiary && (
+        <View style={styles.selectedBeneficiaryCard}>
           <View style={styles.beneficiaryHeader}>
             <View style={styles.beneficiaryIcon}>
               <User size={20} color="#FF6B35" />
             </View>
             <View style={styles.beneficiaryInfo}>
-              <Text style={styles.beneficiaryName}>{beneficiary.name}</Text>
+              <Text style={styles.beneficiaryName}>{selectedBeneficiary.name}</Text>
               <View style={styles.beneficiaryDetails}>
                 <Phone size={12} color="#666" />
-                <Text style={styles.beneficiaryPhone}>{beneficiary.phone}</Text>
+                <Text style={styles.beneficiaryPhone}>{selectedBeneficiary.phone}</Text>
               </View>
               <View style={styles.beneficiaryDetails}>
                 <MapPin size={12} color="#666" />
-                <Text style={styles.beneficiaryLocation}>{beneficiary.location}</Text>
+                <Text style={styles.beneficiaryLocation}>{selectedBeneficiary.location}</Text>
               </View>
             </View>
-            {selectedBeneficiary?.id === beneficiary.id && (
-              <Check size={20} color="#2E8B57" />
-            )}
+            <Check size={20} color="#2E8B57" />
           </View>
-        </TouchableOpacity>
-      ))}
+        </View>
+      )}
+
+      <View style={styles.citySection}>
+        <Text style={styles.cityLabel}>Ville de destination</Text>
+        <CitySelector
+          selectedCountry={selectedCountry}
+          selectedCity={selectedCity}
+          onCitySelect={setSelectedCity}
+        />
+      </View>
     </View>
   );
 
@@ -253,6 +264,10 @@ export default function SendScreen() {
           <Text style={styles.summaryValue}>{selectedBeneficiary?.name}</Text>
         </View>
         <View style={styles.summaryRow}>
+          <Text style={styles.summaryLabel}>Ville</Text>
+          <Text style={styles.summaryValue}>{selectedCity?.name || 'Non spécifiée'}</Text>
+        </View>
+        <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Service</Text>
           <Text style={styles.summaryValue}>{selectedServiceData?.name}</Text>
         </View>
@@ -265,29 +280,27 @@ export default function SendScreen() {
       </View>
 
       <View style={styles.summaryCard}>
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Carte de paiement</Text>
-          <Text style={styles.summaryValue}>{userCard?.cardNumber}</Text>
-        </View>
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Titulaire</Text>
-          <Text style={styles.summaryValue}>{userCard?.cardholderName}</Text>
-        </View>
-      </View>
-
-      {!userCard && (
-        <View style={styles.noCardWarning}>
-          <Text style={styles.warningText}>
-            Aucune carte enregistrée. Veuillez ajouter une carte de paiement.
-          </Text>
-          <TouchableOpacity 
+        {cardData ? (
+          <>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Carte de paiement</Text>
+              <Text style={styles.summaryValue}>**** **** **** {cardData.cardNumber.slice(-4)}</Text>
+            </View>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Titulaire</Text>
+              <Text style={styles.summaryValue}>{cardData.cardholderName}</Text>
+            </View>
+          </>
+        ) : (
+          <TouchableOpacity
             style={styles.addCardButton}
-            onPress={() => router.push('/(tabs)/cards')}
+            onPress={() => setShowCardModal(true)}
           >
-            <Text style={styles.addCardButtonText}>Ajouter une carte</Text>
+            <CreditCard size={20} color="#FF6B35" />
+            <Text style={styles.addCardText}>Ajouter une carte de paiement</Text>
           </TouchableOpacity>
-        </View>
-      )}
+        )}
+      </View>
     </View>
   );
 
@@ -324,12 +337,13 @@ export default function SendScreen() {
           <TouchableOpacity
             style={[
               styles.nextButton,
-              step === 1 && { flex: 1 }
+              step === 1 && { flex: 1 },
+              step === 4 && !cardData && styles.nextButtonDisabled
             ]}
             onPress={step === 4 ? handleSend : handleNext}
-          >
+            disabled={step === 4 && !cardData}
             <LinearGradient
-              colors={['#FF6B35', '#FF8A65']}
+              colors={step === 4 && !cardData ? ['#CCC', '#CCC'] : ['#FF6B35', '#FF8A65']}
               style={styles.nextButtonGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
@@ -342,6 +356,31 @@ export default function SendScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      <BeneficiarySearchModal
+        visible={showBeneficiaryModal}
+        onClose={() => setShowBeneficiaryModal(false)}
+        onSelect={(beneficiary) => {
+          setSelectedBeneficiary(beneficiary);
+          setShowBeneficiaryModal(false);
+        }}
+        onAddNew={() => {
+          setShowBeneficiaryModal(false);
+          router.push('/(tabs)/beneficiaries');
+        }}
+        beneficiaries={beneficiaries}
+        selectedCountry={selectedCountry}
+      />
+
+      <CardPaymentModal
+        visible={showCardModal}
+        onClose={() => setShowCardModal(false)}
+        onConfirm={(card) => {
+          setCardData(card);
+          setShowCardModal(false);
+        }}
+        amount={formatCurrency(totalAmount, 'EUR')}
+      />
     </SafeAreaView>
   );
 }
@@ -601,6 +640,39 @@ const styles = StyleSheet.create({
     color: '#666',
     marginLeft: 4,
   },
+  searchBeneficiaryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 2,
+    borderColor: '#E5E5E5',
+    gap: 12,
+  },
+  searchBeneficiaryText: {
+    fontSize: 16,
+    color: '#666',
+    flex: 1,
+  },
+  selectedBeneficiaryCard: {
+    backgroundColor: '#FFF3F0',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 2,
+    borderColor: '#FF6B35',
+  },
+  citySection: {
+    marginTop: 16,
+  },
+  cityLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#333',
+    marginBottom: 8,
+  },
   noCardWarning: {
     backgroundColor: '#FFF3F0',
     padding: 16,
@@ -615,15 +687,21 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   addCardButton: {
-    backgroundColor: '#FF6B35',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F8F9FA',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 2,
+    borderColor: '#E5E5E5',
+    borderStyle: 'dashed',
+    gap: 8,
   },
-  addCardButtonText: {
-    fontSize: 12,
-    color: '#FFFFFF',
-    fontWeight: '500',
+  addCardText: {
+    fontSize: 16,
+    color: '#FF6B35',
+    fontWeight: '600',
   },
   summaryCard: {
     backgroundColor: '#FFFFFF',
@@ -700,5 +778,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#FFFFFF',
+  },
+  nextButtonDisabled: {
+    opacity: 0.5,
   },
 });
