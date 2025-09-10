@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { LogIn, UserPlus } from 'lucide-react-native';
+import { ArrowRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 export default function WelcomeScreen() {
@@ -24,55 +24,51 @@ export default function WelcomeScreen() {
         </View>
 
         {/* Welcome Text */}
-        <Text style={styles.title}>Bienvenue sur Niger Money Transfer</Text>
+        <Text style={styles.title}>Niger Money Transfer</Text>
         <Text style={styles.subtitle}>
-          La solution la plus simple et sécurisée pour envoyer de l'argent vers le Niger
+          Envoyez de l'argent rapidement et en toute sécurité vers l'Afrique
         </Text>
 
         {/* Features */}
         <View style={styles.features}>
           <View style={styles.feature}>
             <Text style={styles.featureIcon}>⚡</Text>
-            <Text style={styles.featureText}>Transferts instantanés</Text>
+            <Text style={styles.featureText}>Transferts en quelques minutes</Text>
           </View>
           <View style={styles.feature}>
             <Text style={styles.featureIcon}>🔒</Text>
-            <Text style={styles.featureText}>100% sécurisé</Text>
+            <Text style={styles.featureText}>Sécurité de niveau bancaire</Text>
           </View>
           <View style={styles.feature}>
             <Text style={styles.featureIcon}>💰</Text>
-            <Text style={styles.featureText}>Frais transparents</Text>
+            <Text style={styles.featureText}>Frais transparents dès 1.5%</Text>
+          </View>
+          <View style={styles.feature}>
+            <Text style={styles.featureIcon}>🌍</Text>
+            <Text style={styles.featureText}>7 pays d'Afrique de l'Ouest</Text>
           </View>
         </View>
       </View>
 
-      {/* Action Buttons */}
+      {/* Action Button */}
       <View style={styles.actions}>
         <TouchableOpacity
-          style={styles.loginButton}
-          onPress={() => router.push('/auth/login')}
+          style={styles.startButton}
+          onPress={() => router.replace('/(tabs)')}
         >
           <LinearGradient
-            colors={['#2E8B57', '#4CAF50']}
-            style={styles.loginButtonGradient}
+            colors={['#FF6B35', '#FF8A65']}
+            style={styles.startButtonGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
           >
-            <LogIn size={20} color="#FFFFFF" />
-            <Text style={styles.loginButtonText}>Se connecter</Text>
+            <Text style={styles.startButtonText}>Commencer maintenant</Text>
+            <ArrowRight size={20} color="#FFFFFF" />
           </LinearGradient>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.registerButton}
-          onPress={() => router.push('/auth/register')}
-        >
-          <UserPlus size={20} color="#FF6B35" />
-          <Text style={styles.registerButtonText}>Créer un compte</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => router.replace('/(tabs)')}>
-          <Text style={styles.skipText}>Continuer sans compte</Text>
+        <TouchableOpacity onPress={() => router.push('/faq')}>
+          <Text style={styles.faqText}>Questions fréquentes</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -151,39 +147,23 @@ const styles = StyleSheet.create({
     padding: 20,
     gap: 16,
   },
-  loginButton: {
+  startButton: {
     borderRadius: 12,
     overflow: 'hidden',
   },
-  loginButtonGradient: {
+  startButtonGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
     gap: 8,
   },
-  loginButtonText: {
+  startButtonText: {
     fontSize: 16,
     fontWeight: '600',
     color: '#FFFFFF',
   },
-  registerButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-    borderRadius: 12,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 2,
-    borderColor: '#FF6B35',
-    gap: 8,
-  },
-  registerButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FF6B35',
-  },
-  skipText: {
+  faqText: {
     fontSize: 14,
     color: '#666',
     textAlign: 'center',

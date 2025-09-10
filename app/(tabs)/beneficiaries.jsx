@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { User, Plus, CreditCard as Edit2, Trash2, Phone, MapPin, X } from 'lucide-react-native';
+import { User, Plus, Edit2, Trash2, Phone, MapPin, X } from 'lucide-react-native';
 import { mockBeneficiaries } from '@/services/mockData';
 import { useAlert } from '@/components/AlertProvider';
+import { useCountry } from '@/contexts/CountryContext';
+import CitySelector from '@/components/CitySelector';
 
 export default function BeneficiariesScreen() {
   const { showError, showSuccess, showConfirm } = useAlert();
+  const { selectedCountry } = useCountry();
   const [beneficiaries, setBeneficiaries] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingBeneficiary, setEditingBeneficiary] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    location: '',
     service: 'mynita',
   });
 
@@ -26,20 +29,22 @@ export default function BeneficiariesScreen() {
     setFormData({
       name: '',
       phone: '',
-      location: '',
       service: 'mynita',
     });
+    setSelectedCity(null);
   };
 
   const handleAddBeneficiary = () => {
-    if (!formData.name || !formData.phone || !formData.location) {
-      showError('Erreur', 'Veuillez remplir tous les champs');
+    if (!formData.name || !formData.phone || !selectedCity) {
+      showError('Erreur', 'Veuillez remplir tous les champs et sélectionner une ville');
       return;
     }
 
     const newBeneficiary = {
       id: Date.now().toString(),
       ...formData,
+      location: `${selectedCity.name}, ${selectedCountry?.name}`,
+      city: selectedCity,
     };
 
     setBeneficiaries([...beneficiaries, newBeneficiary]);
@@ -53,20 +58,25 @@ export default function BeneficiariesScreen() {
     setFormData({
       name: beneficiary.name,
       phone: beneficiary.phone,
-      location: beneficiary.location,
       service: beneficiary.service,
     });
+    setSelectedCity(beneficiary.city);
     setShowAddModal(true);
   };
 
   const handleUpdateBeneficiary = () => {
-    if (!formData.name || !formData.phone || !formData.location) {
-      showError('Erreur', 'Veuillez remplir tous les champs');
+    if (!formData.name || !formData.phone || !selectedCity) {
+      showError('Erreur', 'Veuillez remplir tous les champs et sélectionner une ville');
       return;
     }
 
     const updatedBeneficiaries = beneficiaries.map(b =>
-      b.id === editingBeneficiary.id ? { ...b, ...formData } : b
+      b.id === editingBeneficiary.id ? { 
+        ...b, 
+        ...formData, 
+        location: `${selectedCity.name}, ${selectedCountry?.name}`,
+        city: selectedCity 
+      } : b
     );
 
     setBeneficiaries(updatedBeneficiaries);
@@ -200,7 +210,7 @@ export default function BeneficiariesScreen() {
                   style={styles.formInput}
                   value={formData.name}
                   onChangeText={(text) => setFormData({ ...formData, name: text })}
-                  placeholder="Ex: Abassa Soumana"
+                  placeholder="Ex: Fatima Oumarou"
                   placeholderTextColor="#999"
                 />
               </View>
@@ -218,13 +228,11 @@ export default function BeneficiariesScreen() {
               </View>
 
               <View style={styles.formGroup}>
-                <Text style={styles.formLabel}>Localisation</Text>
-                <TextInput
-                  style={styles.formInput}
-                  value={formData.location}
-                  onChangeText={(text) => setFormData({ ...formData, location: text })}
-                  placeholder="Ex: Niamey, Niger"
-                  placeholderTextColor="#999"
+                <Text style={styles.formLabel}>Ville de destination</Text>
+                <CitySelector
+                  selectedCountry={selectedCountry}
+                  selectedCity={selectedCity}
+                  onCitySelect={setSelectedCity}
                 />
               </View>
 
@@ -334,6 +342,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 40,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
   emptyStateTitle: {
     fontSize: 18,

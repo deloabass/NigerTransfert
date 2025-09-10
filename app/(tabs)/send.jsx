@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowRight, User, Phone, MapPin, CreditCard, Check, Plus } from 'lucide-react-native';
+import { ArrowRight, User, Phone, MapPin, CreditCard, Check, Calendar, Lock, Shield } from 'lucide-react-native';
 import { formatCurrency } from '@/utils/formatters';
 import { mockBeneficiaries } from '@/services/mockData';
 import { useRouter } from 'expo-router';
 import { useCountry } from '@/contexts/CountryContext';
 import CountrySelector from '@/components/CountrySelector';
+import CitySelector from '@/components/CitySelector';
 import { useAlert } from '@/components/AlertProvider';
 
 export default function SendScreen() {
@@ -18,27 +19,49 @@ export default function SendScreen() {
   const [amount, setAmount] = useState('');
   const [selectedService, setSelectedService] = useState('');
   const [selectedBeneficiary, setSelectedBeneficiary] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(null);
   const [beneficiaries, setBeneficiaries] = useState([]);
-  const [userCard, setUserCard] = useState(null);
+  const [cardData, setCardData] = useState({
+    cardNumber: '',
+    expiryDate: '',
+    cvv: '',
+    cardholderName: '',
+  });
 
   useEffect(() => {
     setBeneficiaries(mockBeneficiaries);
-    // Simuler la carte de l'utilisateur
-    setUserCard({
-      id: '1',
-      cardNumber: '**** **** **** 1234',
-      cardType: 'visa',
-      cardholderName: 'AMADOU DIALLO',
-      expiryDate: '12/26',
-    });
   }, []);
 
   const services = selectedCountry ? selectedCountry.services : [];
-
   const convertedAmount = amount && selectedCountry ? parseFloat(amount) * selectedCountry.rate : 0;
   const selectedServiceData = services.find(s => s.id === selectedService);
   const fees = selectedServiceData ? (parseFloat(amount) * selectedServiceData.fees) / 100 : 0;
   const totalAmount = parseFloat(amount) + fees;
+
+  const formatCardNumber = (value) => {
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const matches = v.match(/\d{4,16}/g);
+    const match = matches && matches[0] || '';
+    const parts = [];
+
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4));
+    }
+
+    if (parts.length) {
+      return parts.join(' ');
+    } else {
+      return v;
+    }
+  };
+
+  const formatExpiryDate = (value) => {
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    if (v.length >= 2) {
+      return v.substring(0, 2) + '/' + v.substring(2, 4);
+    }
+    return v;
+  };
 
   const handleNext = () => {
     if (step === 1 && (!amount || parseFloat(amount) <= 0)) {
@@ -53,39 +76,46 @@ export default function SendScreen() {
       showError('Erreur', 'Veuillez sélectionner un bénéficiaire');
       return;
     }
-    if (step === 4 && !userCard) {
-      showError('Erreur', 'Aucune carte de paiement enregistrée');
+    if (step === 4 && !selectedCity) {
+      showError('Erreur', 'Veuillez sélectionner une ville');
       return;
     }
-    if (step < 4) {
+    if (step === 5 && (!cardData.cardNumber || !cardData.expiryDate || !cardData.cvv || !cardData.cardholderName)) {
+      showError('Erreur', 'Veuillez remplir toutes les informations de la carte');
+      return;
+    }
+    if (step < 6) {
       setStep(step + 1);
     }
   };
 
   const handleSend = () => {
     showConfirm(
-      'Confirmer l\'envoi',
-      `Envoyer ${formatCurrency(parseFloat(amount), 'EUR')} à ${selectedBeneficiary?.name} via ${selectedServiceData?.name} avec la carte ${userCard?.cardNumber} ?`,
+      'Confirmer le transfert',
+      `Envoyer ${formatCurrency(parseFloat(amount), 'EUR')} à ${selectedBeneficiary?.name} à ${selectedCity?.name} via ${selectedServiceData?.name} ?`,
       () => {
         showSuccess('Succès', 'Transfert initié avec succès!');
+        // Reset form
         setStep(1);
         setAmount('');
         setSelectedService('');
         setSelectedBeneficiary(null);
+        setSelectedCity(null);
+        setCardData({ cardNumber: '', expiryDate: '', cvv: '', cardholderName: '' });
       }
     );
   };
 
   const renderStepIndicator = () => (
     <View style={styles.stepIndicator}>
-      {[1, 2, 3, 4].map((stepNum) => (
+      {[1, 2, 3, 4, 5, 6].map((stepNum) => (
         <View key={stepNum} style={styles.stepContainer}>
           <View style={[
             styles.stepCircle,
             stepNum <= step ? styles.stepCircleActive : styles.stepCircleInactive
           ]}>
             {stepNum < step ? (
-              <Check size={16} color="#FFFFFF" />
+              <Check size={12} color="#FFFFFF" />
             ) : (
               <Text style={[
                 styles.stepText,
@@ -95,7 +125,7 @@ export default function SendScreen() {
               </Text>
             )}
           </View>
-          {stepNum < 4 && (
+          {stepNum < 6 && (
             <View style={[
               styles.stepLine,
               stepNum < step ? styles.stepLineActive : styles.stepLineInactive
@@ -120,9 +150,9 @@ export default function SendScreen() {
           placeholderTextColor="#999"
         />
       </View>
-      {amount && (
+      {amount && selectedCountry && (
         <Text style={styles.conversionText}>
-          ≈ {formatCurrency(convertedAmount, 'XOF')}
+          ≈ {formatCurrency(convertedAmount, selectedCountry.currency)}
         </Text>
       )}
     </View>
@@ -178,14 +208,6 @@ export default function SendScreen() {
               Délai: {service.processingTime}
             </Text>
           </View>
-          
-          {service.features && (
-            <View style={styles.serviceFeatures}>
-              {service.features.slice(0, 2).map((feature, index) => (
-                <Text key={index} style={styles.serviceFeature}>• {feature}</Text>
-              ))}
-            </View>
-          )}
         </TouchableOpacity>
       ))}
     </View>
@@ -227,6 +249,107 @@ export default function SendScreen() {
     </View>
   );
 
+  const renderCityStep = () => (
+    <View style={styles.stepContent}>
+      <Text style={styles.stepTitle}>Ville de destination</Text>
+      <Text style={styles.stepSubtitle}>
+        Sélectionnez la ville où {selectedBeneficiary?.name} recevra l'argent
+      </Text>
+      
+      <View style={styles.citySelector}>
+        <CitySelector
+          selectedCountry={selectedCountry}
+          selectedCity={selectedCity}
+          onCitySelect={setSelectedCity}
+        />
+      </View>
+    </View>
+  );
+
+  const renderCardStep = () => (
+    <View style={styles.stepContent}>
+      <Text style={styles.stepTitle}>Informations de paiement</Text>
+      <Text style={styles.stepSubtitle}>
+        Saisissez les informations de votre carte bancaire
+      </Text>
+
+      <View style={styles.cardForm}>
+        <View style={styles.formGroup}>
+          <Text style={styles.formLabel}>Numéro de carte</Text>
+          <View style={styles.inputContainer}>
+            <CreditCard size={20} color="#666" />
+            <TextInput
+              style={styles.input}
+              value={cardData.cardNumber}
+              onChangeText={(text) => setCardData({ ...cardData, cardNumber: formatCardNumber(text) })}
+              placeholder="1234 5678 9012 3456"
+              placeholderTextColor="#999"
+              keyboardType="numeric"
+              maxLength={19}
+            />
+          </View>
+        </View>
+
+        <View style={styles.formRow}>
+          <View style={[styles.formGroup, styles.formGroupHalf]}>
+            <Text style={styles.formLabel}>Date d'expiration</Text>
+            <View style={styles.inputContainer}>
+              <Calendar size={20} color="#666" />
+              <TextInput
+                style={styles.input}
+                value={cardData.expiryDate}
+                onChangeText={(text) => setCardData({ ...cardData, expiryDate: formatExpiryDate(text) })}
+                placeholder="MM/AA"
+                placeholderTextColor="#999"
+                keyboardType="numeric"
+                maxLength={5}
+              />
+            </View>
+          </View>
+
+          <View style={[styles.formGroup, styles.formGroupHalf]}>
+            <Text style={styles.formLabel}>CVV</Text>
+            <View style={styles.inputContainer}>
+              <Lock size={20} color="#666" />
+              <TextInput
+                style={styles.input}
+                value={cardData.cvv}
+                onChangeText={(text) => setCardData({ ...cardData, cvv: text })}
+                placeholder="123"
+                placeholderTextColor="#999"
+                keyboardType="numeric"
+                maxLength={3}
+                secureTextEntry
+              />
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.formLabel}>Nom du titulaire</Text>
+          <View style={styles.inputContainer}>
+            <User size={20} color="#666" />
+            <TextInput
+              style={styles.input}
+              value={cardData.cardholderName}
+              onChangeText={(text) => setCardData({ ...cardData, cardholderName: text })}
+              placeholder="AMADOU DIALLO"
+              placeholderTextColor="#999"
+              autoCapitalize="characters"
+            />
+          </View>
+        </View>
+
+        <View style={styles.securityInfo}>
+          <Shield size={16} color="#2E8B57" />
+          <Text style={styles.securityText}>
+            Vos données sont protégées par un chiffrement SSL 256-bit
+          </Text>
+        </View>
+      </View>
+    </View>
+  );
+
   const renderSummaryStep = () => (
     <View style={styles.stepContent}>
       <Text style={styles.stepTitle}>Résumé du transfert</Text>
@@ -253,6 +376,10 @@ export default function SendScreen() {
           <Text style={styles.summaryValue}>{selectedBeneficiary?.name}</Text>
         </View>
         <View style={styles.summaryRow}>
+          <Text style={styles.summaryLabel}>Ville</Text>
+          <Text style={styles.summaryValue}>{selectedCity?.name}</Text>
+        </View>
+        <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Service</Text>
           <Text style={styles.summaryValue}>{selectedServiceData?.name}</Text>
         </View>
@@ -267,27 +394,13 @@ export default function SendScreen() {
       <View style={styles.summaryCard}>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Carte de paiement</Text>
-          <Text style={styles.summaryValue}>{userCard?.cardNumber}</Text>
+          <Text style={styles.summaryValue}>{cardData.cardNumber}</Text>
         </View>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Titulaire</Text>
-          <Text style={styles.summaryValue}>{userCard?.cardholderName}</Text>
+          <Text style={styles.summaryValue}>{cardData.cardholderName}</Text>
         </View>
       </View>
-
-      {!userCard && (
-        <View style={styles.noCardWarning}>
-          <Text style={styles.warningText}>
-            Aucune carte enregistrée. Veuillez ajouter une carte de paiement.
-          </Text>
-          <TouchableOpacity 
-            style={styles.addCardButton}
-            onPress={() => router.push('/(tabs)/cards')}
-          >
-            <Text style={styles.addCardButtonText}>Ajouter une carte</Text>
-          </TouchableOpacity>
-        </View>
-      )}
     </View>
   );
 
@@ -309,7 +422,9 @@ export default function SendScreen() {
         {step === 1 && renderAmountStep()}
         {step === 2 && renderServiceStep()}
         {step === 3 && renderBeneficiaryStep()}
-        {step === 4 && renderSummaryStep()}
+        {step === 4 && renderCityStep()}
+        {step === 5 && renderCardStep()}
+        {step === 6 && renderSummaryStep()}
 
         <View style={styles.actions}>
           {step > 1 && (
@@ -326,7 +441,7 @@ export default function SendScreen() {
               styles.nextButton,
               step === 1 && { flex: 1 }
             ]}
-            onPress={step === 4 ? handleSend : handleNext}
+            onPress={step === 6 ? handleSend : handleNext}
           >
             <LinearGradient
               colors={['#FF6B35', '#FF8A65']}
@@ -335,7 +450,7 @@ export default function SendScreen() {
               end={{ x: 1, y: 1 }}
             >
               <Text style={styles.nextButtonText}>
-                {step === 4 ? 'Envoyer' : 'Suivant'}
+                {step === 6 ? 'Confirmer le transfert' : 'Suivant'}
               </Text>
               <ArrowRight size={16} color="#FFFFFF" />
             </LinearGradient>
@@ -385,9 +500,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   stepCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -398,7 +513,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E5E5',
   },
   stepText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
   },
   stepTextActive: {
@@ -408,9 +523,9 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   stepLine: {
-    width: 40,
+    width: 30,
     height: 2,
-    marginHorizontal: 8,
+    marginHorizontal: 6,
   },
   stepLineActive: {
     backgroundColor: '#2E8B57',
@@ -425,17 +540,28 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     color: '#333',
-    marginBottom: 24,
+    marginBottom: 8,
     textAlign: 'center',
+  },
+  stepSubtitle: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 24,
   },
   amountContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#E5E5E5',
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 24,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
   currencySymbol: {
     fontSize: 32,
@@ -471,6 +597,7 @@ const styles = StyleSheet.create({
   },
   serviceCardSelected: {
     borderColor: '#2E8B57',
+    backgroundColor: '#F8FFF8',
   },
   serviceHeader: {
     flexDirection: 'row',
@@ -502,27 +629,16 @@ const styles = StyleSheet.create({
     borderTopColor: '#F0F0F0',
   },
   serviceRate: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#666',
   },
   serviceFees: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#666',
   },
   serviceTime: {
-    fontSize: 12,
-    color: '#666',
-  },
-  serviceFeatures: {
-    marginTop: 8,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
-  },
-  serviceFeature: {
     fontSize: 11,
-    color: '#2E8B57',
-    marginBottom: 2,
+    color: '#666',
   },
   noCountryWarning: {
     backgroundColor: '#FFF3F0',
@@ -563,6 +679,7 @@ const styles = StyleSheet.create({
   },
   beneficiaryCardSelected: {
     borderColor: '#2E8B57',
+    backgroundColor: '#F8FFF8',
   },
   beneficiaryHeader: {
     flexDirection: 'row',
@@ -601,29 +718,56 @@ const styles = StyleSheet.create({
     color: '#666',
     marginLeft: 4,
   },
-  noCardWarning: {
-    backgroundColor: '#FFF3F0',
-    padding: 16,
-    borderRadius: 12,
+  citySelector: {
     marginTop: 16,
-    alignItems: 'center',
   },
-  warningText: {
+  cardForm: {
+    marginTop: 16,
+  },
+  formRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  formGroup: {
+    marginBottom: 20,
+  },
+  formGroupHalf: {
+    flex: 1,
+  },
+  formLabel: {
     fontSize: 14,
-    color: '#FF6B35',
-    textAlign: 'center',
-    marginBottom: 12,
-  },
-  addCardButton: {
-    backgroundColor: '#FF6B35',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  addCardButtonText: {
-    fontSize: 12,
-    color: '#FFFFFF',
     fontWeight: '500',
+    color: '#333',
+    marginBottom: 8,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E5E5',
+    borderRadius: 12,
+    padding: 12,
+  },
+  input: {
+    flex: 1,
+    marginLeft: 12,
+    fontSize: 16,
+    color: '#333',
+  },
+  securityInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E8F5E8',
+    padding: 12,
+    borderRadius: 8,
+    gap: 8,
+    marginTop: 8,
+  },
+  securityText: {
+    fontSize: 12,
+    color: '#2E8B57',
+    flex: 1,
   },
   summaryCard: {
     backgroundColor: '#FFFFFF',

@@ -1,60 +1,54 @@
 # Niger Money Transfer
 
-Une application mobile innovante et intuitive destinée à la diaspora nigérienne vivant en Europe pour envoyer de l'argent au Niger via MyNITA et Amana-ta.
+Une application mobile simple et intuitive pour envoyer de l'argent depuis l'Europe vers l'Afrique de l'Ouest.
 
-## 🎯 Objectifs
+## 🎯 Objectif
 
-- Faciliter les transferts d'argent Europe → Niger
-- Intégrer les méthodes de paiement locales (MyNITA et Amana-ta)
-- Assurer une expérience fluide et sécurisée pour tous les utilisateurs
+Faciliter les transferts d'argent rapides et sécurisés vers 7 pays d'Afrique de l'Ouest avec une interface épurée et des frais transparents.
 
-## 🧩 Fonctionnalités principales
+## 🌍 Pays supportés
+
+- 🇳🇪 **Niger** - MyNITA, Amana-ta
+- 🇸🇳 **Sénégal** - Orange Money, Wave
+- 🇲🇱 **Mali** - Orange Money, Moov Money
+- 🇧🇫 **Burkina Faso** - Orange Money, Moov Money
+- 🇨🇮 **Côte d'Ivoire** - Orange Money, MTN Money
+- 🇬🇭 **Ghana** - MTN MoMo, Vodafone Cash
+- 🇳🇬 **Nigeria** - Paystack, Flutterwave
+
+## ✨ Fonctionnalités
 
 ### 🏠 Page d'accueil
-- Interface moderne et chaleureuse
-- Résumé du solde avec possibilité de masquer/afficher
-- Dernières transactions avec statuts en temps réel
-- Bouton rapide "Envoyer de l'argent"
-- Statistiques mensuelles
+- Interface épurée et moderne
+- Accès rapide au transfert d'argent
+- Sélection du pays de destination
+- Historique des transferts récents
+- Statistiques personnelles
 
-### 🔐 Authentification et sécurité
-- Connexion par email et mot de passe
-- Système d'inscription complet
-- Vérification KYC (simulation)
-- Interface sécurisée avec gestion des données sensibles
-
-### 💸 Envoi d'argent
-- Processus en 4 étapes intuitives
-- Conversion automatique EUR → XOF
-- Choix entre MyNITA et Amana-ta
-- Sélection des bénéficiaires
-- Résumé détaillé avant validation
-- Animations de confirmation
+### 💸 Processus de transfert (6 étapes)
+1. **Montant** - Saisie du montant en EUR avec conversion automatique
+2. **Service** - Choix du service de paiement selon le pays
+3. **Bénéficiaire** - Sélection ou ajout d'un nouveau bénéficiaire
+4. **Ville** - Choix de la ville de destination
+5. **Paiement** - Saisie des informations de carte bancaire
+6. **Confirmation** - Résumé et validation finale
 
 ### 👥 Gestion des bénéficiaires
-- Ajout, modification et suppression
-- Informations complètes (nom, téléphone, localisation)
-- Service préféré par bénéficiaire
+- Ajout avec nom, téléphone et ville
+- Sélection du service préféré
+- Modification et suppression
 - Interface moderne avec modales
 
 ### 📊 Historique des transactions
 - Liste complète des transferts
 - Filtres par statut et recherche
-- Détails complets de chaque transaction
-- Statistiques de transfert
-- Téléchargement des reçus (simulation)
+- Détails de chaque transaction
+- Statuts en temps réel
 
 ### ❓ FAQ et support
-- Questions fréquentes organisées par catégorie
+- Questions fréquentes organisées
 - Fonction de recherche
-- Interface de contact support
-- Informations détaillées sur les services
-
-### 👤 Profil utilisateur
-- Informations personnelles
-- Statut de vérification
-- Paramètres de sécurité
-- Notifications et préférences
+- Support client intégré
 
 ## 🎨 Design
 
@@ -64,84 +58,80 @@ Une application mobile innovante et intuitive destinée à la diaspora nigérien
 - **Blanc** : #FFFFFF (clarté et propreté)
 - **Arrière-plan** : #F8F9FA (douceur)
 
-### Caractéristiques design
-- Interface moderne et épurée
-- Animations douces et naturelles
-- Typographie lisible et hiérarchisée
-- Icônes expressives avec Lucide React Native
-- Responsive design pour tous les écrans
-- Dégradés et ombres pour la profondeur
+### Caractéristiques
+- Interface épurée et moderne
+- Animations fluides
+- Typographie claire
+- Icônes expressives
+- Design responsive
 
-## 🛠️ Technologies utilisées
+## 🛠️ Technologies
 
-### Frontend
 - **React Native** avec Expo
 - **Expo Router** pour la navigation
 - **React Native Reanimated** pour les animations
 - **Expo Linear Gradient** pour les dégradés
 - **Lucide React Native** pour les icônes
 
-### Structure du projet
+## 📱 Structure simplifiée
+
 ```
 app/
 ├── (tabs)/              # Navigation principale
 │   ├── index.jsx       # Page d'accueil
-│   ├── send.jsx        # Envoi d'argent
+│   ├── send.jsx        # Transfert d'argent
 │   ├── history.jsx     # Historique
-│   ├── beneficiaries.jsx # Bénéficiaires
-│   └── profile.jsx     # Profil
-├── auth/               # Authentification
-│   ├── login.jsx
-│   └── register.jsx
+│   └── beneficiaries.jsx # Bénéficiaires
+├── onboarding/         # Introduction
+├── country-selection.jsx # Sélection pays
 ├── faq.jsx            # FAQ
 └── _layout.jsx        # Layout principal
 
 components/            # Composants réutilisables
-services/             # Services et données mock
-utils/               # Utilitaires et formatters
+├── CountrySelector.jsx
+├── CitySelector.jsx
+├── AlertProvider.jsx
+└── ToastProvider.jsx
+
+services/             # Données et services
+├── mockData.js
+├── countryData.js
+└── cityData.js
+
+utils/               # Utilitaires
+└── formatters.js
 ```
 
-## 📱 Fonctionnalités par écran
+## 🚀 Fonctionnalités clés
 
-### Accueil
-- Salutation personnalisée
-- Carte de solde avec conversion
-- Actions rapides
-- Transactions récentes
-- Statistiques mensuelles
+### Simplicité
+- Pas de création de compte obligatoire
+- Pas de sauvegarde de cartes bancaires
+- Interface intuitive en 6 étapes
+- Processus guidé et clair
 
-### Envoi d'argent
-- Étape 1 : Saisie du montant
-- Étape 2 : Choix du service
-- Étape 3 : Sélection du bénéficiaire
-- Étape 4 : Résumé et confirmation
+### Sécurité
+- Saisie des données de carte à chaque transfert
+- Chiffrement des communications
+- Validation des informations
+- Confirmation avant envoi
 
-### Historique
-- Filtres par statut
-- Recherche textuelle
-- Détails complets des transactions
-- Statistiques agrégées
+### Rapidité
+- Transferts en quelques minutes
+- Interface optimisée
+- Sélection rapide des bénéficiaires
+- Conversion automatique des devises
 
-### Bénéficiaires
-- Liste avec photos de profil
-- Ajout via modal
-- Édition et suppression
-- Organisation par service
+## 💰 Avantages
 
-### Profil
-- Informations utilisateur
-- Statut de vérification
-- Paramètres de sécurité
-- Menu de navigation
+- **Frais transparents** : À partir de 1.5% seulement
+- **Transferts rapides** : 1-10 minutes selon le service
+- **Sécurité maximale** : Chiffrement de niveau bancaire
+- **Large couverture** : 7 pays, 15+ services partenaires
+- **Interface simple** : Processus en 6 étapes claires
 
-## 🔧 Installation et utilisation
+## 🔧 Installation
 
-### Prérequis
-- Node.js
-- Expo CLI
-- Un émulateur Android/iOS ou un appareil physique
-
-### Lancement
 ```bash
 # Installer les dépendances
 npm install
@@ -150,59 +140,12 @@ npm install
 npm run dev
 ```
 
-### Utilisation
-1. L'application démarre sur l'écran d'accueil
-2. Naviguez entre les onglets via la barre de navigation
-3. Testez les fonctionnalités avec les données simulées
-4. Toutes les actions sont simulées pour la démonstration
-
-## 🌟 Fonctionnalités avancées
-
-### Animations
-- Transitions fluides entre les écrans
-- Animations de chargement
-- Effets de survol sur les boutons
-- Animations de confirmation
-
-### Expérience utilisateur
-- Interface intuitive et moderne
-- Feedback visuel pour toutes les actions
-- Gestion des états de chargement
-- Messages d'erreur informatifs
-
-### Sécurité (simulation)
-- Authentification simulée
-- Vérification KYC
-- Masquage du solde
-- Gestion des permissions
-
-## 📊 Données simulées
-
-L'application utilise des données mock pour simuler :
-- Bénéficiaires pré-enregistrés
-- Historique des transactions
-- Taux de change EUR/XOF
-- Services MyNITA et Amana-ta
-- FAQ complètes
-
-## 🚀 Prochaines étapes
-
-Pour une version production :
-1. Intégration des vraies API MyNITA et Amana-ta
-2. Authentification réelle avec backend
-3. Système de paiement sécurisé
-4. Vérification KYC automatisée
-5. Notifications push
-6. Support client intégré
-7. Multi-langue (français/haoussa)
-
 ## 📞 Support
 
-Pour toute question ou assistance :
 - FAQ intégrée dans l'application
-- Support client 24h/24 et 7j/7
-- Email : support@nigermoneytransfer.com
+- Support client disponible
+- Interface de contact simple
 
 ---
 
-**Niger Money Transfer** - Connecter la diaspora nigérienne à sa famille 🇳🇪❤️
+**Niger Money Transfer** - Connecter l'Europe à l'Afrique 🌍❤️
